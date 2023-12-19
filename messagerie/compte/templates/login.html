@@ -1,5 +1,6 @@
-<form method="post" action=".">
+<form method="post" >
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Connecter">
 </form>
+<a href='{% url "createUser" %}'>Créer une compte</a> 

@@ -18,15 +18,15 @@ class LoginView(View):
         return render(request, 'login.html', {'form':LoginForm()})
     
     def post(self, request):
-        form = LoginForm(request.POST)
+        form, user = LoginForm(request.POST), None
         if form.is_valid():
-            dict = form.cleaned_data
-        user = authenticate(request, username=dict['username'], password=dict['password'])
+            data = form.cleaned_data
+            user = authenticate(request, username=data['username'], password=data['password'])
         if user is not None:
             login(request, user)
             return redirect('index')
         else:
-            return redirect('login')
+            return self.get(request)
 
 
 class LogoutView(View):
@@ -41,8 +41,7 @@ class CreateUserView(View):
     
     def get(self, request):
         if request.user.is_authenticated:
-            util = Utilisateur.objects.get(username=request.user)
-            form = CreateUtilisateurForm(instance=util)
+            form = CreateUtilisateurForm(instance=request.user)
         else: 
             form = CreateUtilisateurForm()
         return self.render_page([request, form])
@@ -61,3 +60,8 @@ class CreateUserView(View):
             return redirect('login')
         return self.render_page([request, form])
         
+class DeleteView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            request.user.delete()
+        return redirect('login')

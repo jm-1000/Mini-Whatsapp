@@ -25,6 +25,11 @@ class CreateUtilisateurForm(forms.ModelForm):
             'info'
         ]
 
+    def save(self):
+        user = super(CreateUtilisateurForm, self).save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        user.save()
+
     def update(self, user):
         data = self.data
         user.username = data['username']

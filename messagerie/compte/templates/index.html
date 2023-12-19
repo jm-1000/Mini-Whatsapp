@@ -1,4 +1,6 @@
 {% if user.is_authenticated %}
    <p> {{ user.get_username }} </p>
    <a href="{% url 'logout' %}">Logout</a>
+   <a href="{% url 'createUser' %}">Actualiser compte</a>
+   <a href="{% url 'deleteUser' %}">Supprimer le compte</a>
 {% endif %}
