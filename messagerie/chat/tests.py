@@ -1,36 +1,53 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from .models import *
-import random
+from random import randint
 
 # Create your tests here.
-plen = lambda x:print(len(x),'\n')
-# class creer_objects(TestCase):
-#     ju=Utilisateur(nom='juari',num_tel='+12345456',info='hi people!')
-#     man=Utilisateur(nom='manuel',num_tel='+00999999',info='ola people!')
-#     fra=Utilisateur(nom='francis',num_tel='+0544999',info='salut!')
-#     jm=Utilisateur(nom='jmf',num_tel='+0544999345',info='bonjour!')
-#     ju.save()
-#     jm.save()
-#     man.save()
-#     fra.save()
-#     c1=Chat(util_1=ju,util_2=man)
-#     c2=Chat(util_1=fra,util_2=man)
-#     c3=Chat(util_1=ju,util_2=fra)
-#     c4=Chat(util_1=man,util_2=jm)
-#     c4.save()
-#     c1.save()
-#     c2.save()
-#     c3.save()
-#     getRandom = lambda x: x[random.randint(0,len(x)-1)]
-#     for c in [c1,c1,c1,c2,c2,c3,c3,c4,c4]:
-#         u = getRandom([c.util_1,c.util_2])
-#         Message(texte=f'{u} : msg {c}',util=u, chat=c).save()
+def detecte_erreur(func, msg):
+    try : func.clean()
+    except ValidationError: pass
+    else: assert False, f"Non detecté : '{msg}'"
 
-# class remover_objects(TestCase):
-#     Message.objects.get(id=1).delete()
-#     Chat.objects.get(id=2).delete()
-#     Utilisateur.objects.get(id=2).delete()
+class Creer_users(TestCase):
+    def setUp(self):
+        user_modal = get_user_model()
+        self.james = user_modal.objects.create_user('james','','x')
+        self.luis = user_modal.objects.create_user('luis','','x')
+        self.daniel = user_modal.objects.create_user('daniel','','x')
+        self.john = user_modal.objects.create_user('john','','x')
+
+class Creer_chat(Creer_users, TestCase):
+    def test_model_chat(self):
+        chat1 = Chat(nom_groupe='G1', groupe=True)
+        chat2 = Chat()
+        chat4 = Chat(groupe=True)
+        chat2.save()
+        chat1.save()
+        chat4.save()
+        chat4.utilisateurs.add(self.james, self.luis, self.john)
+        detecte_erreur(chat4, 'Un groupe doit avoir un nom.')
+        detecte_erreur(chat1, 'Un groupe doit avoir au moins un utilisateur.')
+        chat1.utilisateurs.add(self.james, self.luis, self.daniel, self.john)
+        chat2.utilisateurs.add(self.james)
+        detecte_erreur(chat2, 'Un chat doit avoir que 2 utilisateurs.')
+        chat1.clean()
 
 
-# alias test="rm db.sqlite3 2>/dev/null;python3 manage.py makemigrations;python3 manage.py migrate >/tmp/.null;echo '';python3 manage.py test"
+class Creer_message(Creer_users, TestCase):
+    def test_model_message(self):
+        chats = []
+        for i in range(3):
+            chat = Chat.objects.create()
+            chat.save()
+            chats.append(chat)
+        chats[0].utilisateurs.add(self.james, self.luis, self.daniel, self.john)
+        chats[2].utilisateurs.add(self.james, self.daniel)
+        chats[1].utilisateurs.add(self.john, self.luis)
+        getRandom = lambda x: x[randint(0,len(x)-1)]
+        for chat in chats*10:
+            util = getRandom(chat.utilisateurs.all())
+            Message(texte=f'{util} : msg {randint(0,100)}', util=util, chat=chat).save()
+        # for chat in chats:
+            # print(chat.get_messages())
+        
