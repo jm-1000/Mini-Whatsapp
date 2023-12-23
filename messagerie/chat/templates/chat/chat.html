@@ -5,9 +5,9 @@
             {% if chat.groupe %}
                 <li>{{ chat }}</li>
             {% else %}
-                {% for util in chat.utilisateurs.all %}
-                    {% if user != util %}
-                        <li>{{ util }}</li>
+                {% for elem in chat.users.all %}
+                    {% if user != elem %}
+                        <li>{{ elem }}</li>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -19,9 +19,9 @@
             {% if chat.groupe %}
                 <h5>{{ chat }}</h5>
             {% else %}
-                {% for util in chat.utilisateurs.all %}
-                    {% if user != util %}
-                        <h5>{{ util }}</h5>
+                {% for elem in chat.users.all %}
+                    {% if user != elem %}
+                        <h5>{{ elem }}</h5>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -37,7 +37,7 @@
     <ul>
             <li><a href="{% url 'chat:createGr' %}">Créer un groupe</a></li>
             {% for user in users %}
-            <li><a href="{% url 'chat:createMsg' user.id %}">{{ user }}</a></li>
+            <li><a href="{% url 'chat:handleChat' user.id %}">{{ user }}</a></li>
         {% endfor %}
     </ul>
 {% endif %}

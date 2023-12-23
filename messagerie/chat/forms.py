@@ -1,22 +1,23 @@
 from django.core.validators import RegexValidator
 from django import forms
-from .models import Message, Users, Chat
+from .models import Message, User, Chat
 
 class MessageForm(forms.ModelForm):
+    chat = forms.IntegerField(required=True)
     class Meta:
         model = Message
         fields = [
-            'texte',
+            'text',
             'chat'
         ]
 
 class GroupForm(forms.ModelForm):
-    nom_groupe = forms.CharField(required=True)
+    name = forms.CharField(required=True)
     class Meta:
         model = Chat
         fields = [
-            'nom_groupe',
-            'utilisateurs'
+            'name',
+            'users'
         ]
     
         

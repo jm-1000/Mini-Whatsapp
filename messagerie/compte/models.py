@@ -12,6 +12,6 @@ class Utilisateur(AbstractUser):
         all_chats = apps.get_model('chat', 'Chat').objects.all()
         user_chats = []
         for chat in all_chats:
-            if self in chat.utilisateurs.all():
+            if self in chat.users.all():
                 user_chats.append(chat)
         return user_chats
