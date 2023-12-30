@@ -11,6 +11,7 @@ class MessageForm(forms.ModelForm):
             'chat'
         ]
 
+
 class GroupForm(forms.ModelForm):
     name = forms.CharField(required=True)
     class Meta:

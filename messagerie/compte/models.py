@@ -8,10 +8,7 @@ class Utilisateur(AbstractUser):
     num_tel = models.CharField(max_length=15, blank=True)
     info = models.TextField(blank=True, max_length=200)
 
-    def get_chats(self):
-        all_chats = apps.get_model('chat', 'Chat').objects.all()
-        user_chats = []
-        for chat in all_chats:
-            if self in chat.users.all():
-                user_chats.append(chat)
-        return user_chats
+    def get_chats(self, user=None):
+        if user != None:
+            return apps.get_model('chat', 'Chat').objects.filter(users=self).filter(users=user).filter(groupe=False)
+        return apps.get_model('chat', 'Chat').objects.filter(users=self)

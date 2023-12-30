@@ -3,7 +3,6 @@
    <a href="{% url 'compte:logout' %}">Logout</a>
    <a href="{% url 'compte:createUser' %}">Actualiser compte</a>
    <a href="{% url 'compte:deleteUser' %}">Supprimer le compte</a>
-   <p>{{ user.info }} </p>
 {% endif %}
 
 {% if chats is not None %}
@@ -11,19 +10,11 @@
     <ul>
         {% for chat in chats %}
             {% if chat.groupe %}
-                <li> 
-                    <a href="{% url "chat:handleGr" chat.id %}">{{ chat }}</a>
-                    <p>{{ chat.get_messages.last }}</p>
-                    <span>{{ chat.get_messages.last.time }}</span>
-                </li>
+                <li> <a href="{% url "chat:handleGr" chat.id %}">{{ chat }}</a></li>
             {% else %}
                 {% for elem in chat.users.all %}
                     {% if user != elem %}
-                        <li>
-                            <a href="{% url "chat:handleChat" elem.id %}">{{ elem }}</a>
-                            <p>{{ chat.get_messages.last }}</p>
-                            <span>{{ chat.get_messages.last.time }}</span>
-                        </li>
+                        <li><a href="{% url "chat:handleChat" elem.id %}">{{ elem }}</a></li>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -43,10 +34,7 @@
             {% endif %}
             <ul>
                 {% for message in chat.get_messages %}
-                    <li>
-                        <p>{{ message }}</p>
-                        <span>{{ message.time }}</span>
-                    </li>
+                    <li>{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endfor %}

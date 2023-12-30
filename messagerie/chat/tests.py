@@ -39,31 +39,33 @@ class Creer_message(Creer_users, TestCase):
         for chat in chats*10:
             user = getRandom(chat.users.all())
             Message(text=f'{user} : msg {randint(0, 100)}', user=user, chat=chat).save()
-        # for chat in chats:
-            # print(chat.get_messages())
-    
-# class Creer_chat(TestCase):
-#         user_modal = get_user_model()
-#         james = user_modal.objects.create_user('james','','x')
-#         luis = user_modal.objects.create_user('luis','','x')
-#         daniel = user_modal.objects.create_user('daniel','','x')
-#         john = user_modal.objects.create_user('john','','x')
-#         james.save()
-#         luis.save()
-#         daniel.save()
-#         john.save()
-#         chat1 = Chat(name='G1', groupe=True)
-#         chat2 = Chat(name='G2', groupe=True)
-#         chat4 = Chat(name='G3', groupe=True)
-#         chat2.save()
-#         chat1.save()
-#         chat4.save()
-#         chat4.users.add(james, luis, john, daniel)
-#         chat1.users.add(james, luis, daniel)
-        # chat2.users.add(john, daniel)
         
-        # getRandom = lambda x: x[randint(0,len(x)-1)]
-        # for chat in Chat.objects.all():
-        #     for i in range(0, randint(5,20)):
-        #         user = getRandom(chat.users.all())
-        #         Message(text=f'{user} : msg {randint(0, 100)}', user=user, chat=chat).save()
+    
+class Creer_chat(TestCase):
+        user_modal = get_user_model()
+        Chat.objects.all().delete()
+        user_modal.objects.all().delete()
+        adm = user_modal.objects.create_superuser('adm','','x')
+        james = user_modal.objects.create_user('james','','x')
+        luis = user_modal.objects.create_user('luis','','x')
+        daniel = user_modal.objects.create_user('daniel','','x')
+        john = user_modal.objects.create_user('john','','x')
+        james.save()
+        luis.save()
+        daniel.save()
+        john.save()
+        chat1 = Chat(name='G1', groupe=True, adm = james)
+        chat2 = Chat(name='G2', groupe=True, adm = luis)
+        chat3 = Chat(name='G3', groupe=True, adm = john)
+        chat2.save()
+        chat1.save()
+        chat3.save()
+        chat3.users.add(james, luis, john, daniel)
+        chat1.users.add(james, luis, daniel)
+        chat2.users.add(john, daniel)
+        
+        getRandom = lambda x: x[randint(0,len(x)-1)]
+        for chat in Chat.objects.all():
+            for i in range(0, randint(5,20)):
+                user = getRandom(chat.users.all())
+                Message(text=f'{user} : msg {randint(0, 100)}', user=user, chat=chat).save()

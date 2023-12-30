@@ -25,7 +25,8 @@ class HandleChatView(LoginRequired, View):
     def get(self, request, pk):
         if pk != request.user.id:
             chat = Chat.get_or_create(user=request.user, req_user=User.objects.get(pk=pk))
-            return render(request, 'chat/chat.html', {'message': MessageForm(initial={'chat':chat.id})})
+            return render(request, 'chat/chat.html', {  'message': MessageForm(initial={'chat':chat.id}),
+                                                        'chat':chat})
         return redirect('chat:createChat')
 
     def post(self, request, pk):
@@ -35,6 +36,7 @@ class HandleChatView(LoginRequired, View):
         while True:
             chat_users= chat.users.all()
             if len(chat_users) == 0:
+                chat.adm = request.user
                 chat.users.add(target_user, request.user)
             elif len(chat_users) == 2 and request.user in chat_users and target_user in chat_users:
                 break
@@ -54,6 +56,7 @@ class CreateGroupView(LoginRequired, View):
         if name_group != '':
             chat,_ = Chat.objects.get_or_create(name=name_group, groupe=True)
             chat.users.add(request.user) 
+            chat.adm = request.user
             for id in id_users:
                 chat.users.add(User.objects.get(id=id)) 
             return redirect('chat:handleGr', chat.pk)
@@ -64,9 +67,20 @@ class CreateGroupView(LoginRequired, View):
 class HandleGroupView(LoginRequired, View):
     def get(self, request, pk):
         group = Chat.objects.get(pk=pk)
-        return render(request, 'chat/chat.html', {'message': MessageForm(initial={'chat':group.id})})
+        return render(request, 'chat/chat.html', {  'message': MessageForm(initial={'chat':group.id}),
+                                                    'chat':group})
     
     def post(self, request, pk):
             group = Chat.objects.get(pk=request.POST['chat'])
             Message(text=request.POST['text'], user=request.user, chat=group).save()
             return redirect('chat:handleGr', group.id)
+    
+    
+class DeleteChatView(LoginRequired, View):
+    def get(self, request, pk):
+        chat = Chat.objects.get(pk=pk)
+        if chat.adm == request.user:
+            chat.delete()
+        elif request.user in chat.users.all():
+            chat.users.remove(request.user)
+        return redirect('chat:getChat')

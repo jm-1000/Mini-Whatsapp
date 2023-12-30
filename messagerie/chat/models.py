@@ -7,20 +7,12 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 User = get_user_model()
 
-class Message(models.Model):
-    text = models.TextField(blank=False, max_length=2000)
-    date = models.DateField(auto_now_add=True)
-    time = models.TimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.text[:100]
 
 class Chat(models.Model):
     name = models.CharField(max_length=30, blank=True)
     groupe = models.BooleanField(default=False)
     users = models.ManyToManyField(User)
+    adm = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name="adm")
 
     def __str__(self):
         return self.name  
@@ -37,5 +29,13 @@ class Chat(models.Model):
         return chat[0]
 
 
+class Message(models.Model):
+    text = models.TextField(blank=False, max_length=2000)
+    date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.text[:100]
         
