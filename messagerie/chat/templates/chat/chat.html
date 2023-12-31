@@ -1,79 +1,155 @@
+{% extends "chat/base.html" %}
+{% load static %}
+
+{% block content %}
 {% if user.is_authenticated %}
-   <p> {{ user.get_username }} </p>
-   <a href="{% url 'compte:logout' %}">Logout</a>
-   <a href="{% url 'compte:createUser' %}">Actualiser compte</a>
-   <a href="{% url 'compte:deleteUser' %}">Supprimer le compte</a>
-   <p>{{ user.info }} </p>
-{% endif %}
 
-{% if chats is not None %}
-    <h4>Groupes</h4>
-    <ul>
-        {% for chat in chats %}
-            {% if chat.groupe %}
-                <li> 
-                    <a href="{% url "chat:handleGr" chat.id %}">{{ chat }}</a>
-                    <p>{{ chat.get_messages.last }}</p>
-                    <span>{{ chat.get_messages.last.time }}</span>
-                </li>
-            {% else %}
-                {% for elem in chat.users.all %}
-                    {% if user != elem %}
-                        <li>
-                            <a href="{% url "chat:handleChat" elem.id %}">{{ elem }}</a>
-                            <p>{{ chat.get_messages.last }}</p>
+    <section class="header">
+        <a id="userBtn" >
+            <img class="usericon" src="{% static 'images/user.png' %}" alt="usericon">
+        </a>
+        <nav id="usernav" class="usernav moveUsernav">
+            <div class="useropt">
+                <a href="{% url 'compte:logout' %}" id="logout">Logout</a>
+                <a href="{% url 'compte:createUser' %}" id="updateUser">Actualiser le compte</a>
+                <a href="{% url 'compte:deleteUser' %}" id="logout">Supprimer le compte</a>
+            </div>
+            <div class="userinfo">
+                <div>
+                    <h3>{{ user.get_username|capfirst }}</h3>
+                </div>
+                <div>
+                    <h5>Info</h5>
+                    <p>{{ user.info }}</p>
+                </div>
+                <div>
+                    <h5>Mail</h5>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div>
+                    <h5>Téléphone</h5>
+                    <p>{{ user.num_tel }}</p>
+                </div>
+            </div>  
+        </nav>
+        <a href="{% url 'compte:logout' %}" id="logout">
+            <img class="logouticon" src="{% static 'images/logout.png' %}" alt="logouticon">
+        </a>
+    </section>
+
+    {% comment %} {% if chats is not None %} {% endcomment %}
+        <section class="chat">
+            <header>
+                <h4>Chats</h4>
+                <a href="{% url 'chat:createChat' %}" id="createChatBtn">
+                    <img src="{% static 'images/create.png' %}" alt="createicon">
+                </a>
+            </header>
+            {% if users is not None %}
+                <div id="create" class="create moveCreate">
+                    <div id="createChat" class="createChat">
+                        <h4>Nouveau chat</h4>
+                        <ul>
+                            <li id="createGrBtn"><a href="{% url 'chat:createGr' %}">Créer un groupe</a></li>
+                            {% for user in users %}
+                                <li><a href="{% url 'chat:handleChat' user.id %}">{{ user }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    {% if group is not None %}
+                        <div id="createGr" class="createGr">
+                            <h4>Nouveau groupe</h4>
+                            <label for="id_name">Nom du groupe</label>
+                            {{ group.name }}
+                            <select hidden name="users" required id="id_users" multiple>
+                            </select>
+                            <div>
+                                {% for user in users %}
+                                <label><input type="checkbox" id="option" value="29"/>{{ user }}</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <ul>
+            {% for chat in chats %}
+                {% if chat.groupe %}
+                    <li> 
+                        <a href="{% url "chat:handleGr" chat.id %}">
+                            {{ chat }}
                             <span>{{ chat.get_messages.last.time }}</span>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
-    </ul>
-    <h4>Messages</h4>
+                        </a>
+                        <span>{{ chat.get_messages.last }}</span>
+                    </li>
+                {% else %}
+                    {% for elem in chat.users.all %}
+                        {% if user != elem %}
+                            <li>
+                                <a href="{% url "chat:handleChat" elem.id %}">
+                                    {{ elem }}
+                                    <span>{{ chat.get_messages.last.time }}</span>
+                                </a>
+                                <span>{{ chat.get_messages.last }}</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </section>
+    {% comment %} {% endif %} {% endcomment %}
 
-        {% for chat in chats %}
-            {% if chat.groupe %}
-                <h5>{{ chat }}</h5>
-            {% else %}
-                {% for elem in chat.users.all %}
-                    {% if user != elem %}
-                        <h5>{{ elem }}</h5>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
+
+    <section class="message">
+        <header>
+            <a id="backBtn">
+                <img src="../static/back.png" alt="">
+            </a>
+            <a>
+                {% if chat.groupe %}
+                    {{ chat }}
+                {% else %}
+                    {% for elem in chat.users.all %}
+                        {% if user != elem %}
+                            {{ elem }}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </a>
+            <p></p>
+        </header>
+        <div class="readMsg">
             <ul>
                 {% for message in chat.get_messages %}
-                    <li>
-                        <p>{{ message }}</p>
-                        <span>{{ message.time }}</span>
-                    </li>
+                    {% comment %} <li class="dateMsg"><span>{{message.date}}</span></li> {% endcomment %}
+                    {% if message.user == user %}
+                        <li class="mymessage">
+                    {% else %}
+                        <li class="yourmessage">
+                    {% endif %}
+                            <p>{{ message }}</p>
+                            <span>{{ message.time }}</span>
+                        </li>
                 {% endfor %}
             </ul>
-        {% endfor %}
-{% endif %}
+        </div>
+        <div class="inputMsg">
+            <form method="post">
+                {% csrf_token %}
+                {{ message.text }}
+                {{ message.chat }}
+                <input class='inputMsgBtn' type="image" src="{% static 'images/sender.png' %}" name="submit" alt="Envoyer">
+            </form>
+        </div>
+    </section>
 
-{% if users is not None %}
-    <ul>
-            <li><a href="{% url 'chat:createGr' %}">Créer un groupe</a></li>
-            {% for user in users %}
-            <li><a href="{% url 'chat:handleChat' user.id %}">{{ user }}</a></li>
-        {% endfor %}
-    </ul>
 {% endif %}
+{% endblock content %}
 
-{% if message is not None %}
-    <form method="post">
-        {% csrf_token %}
-        {{ message.as_p }}
-        <input type="submit" value="Envoyer">
-    </form>
-    <a href="{% url "chat:deleteChat" chat.id %}"> Supprimer le chat </a>
-{% endif %}
 
-{% if group is not None %}
-    <form method="post">
-        {% csrf_token %}
-        {{ group.as_p }}
-        <input type="submit" value="Créer">
-    </form>
-{% endif %}
+
+
+

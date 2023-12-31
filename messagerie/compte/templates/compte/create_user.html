@@ -1,5 +1,20 @@
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Valider">
-</form>
+{% extends "chat/base.html" %}
+
+{% block content %}
+<section id="createUser" class="createUser">
+    <form method="POST">
+        {% csrf_token %}
+        <label for="id_username">Username</label>
+        {{form.username}}
+        <label for="id_email">Email address</label>
+        {{form.email}}
+        <label for="id_num_tel">Téléphone</label>
+        {{form.num_tel}}
+        <label for="id_password">Mot de passe</label>
+        {{form.password}}
+        <label for="id_info">Info</label>
+        {{form.info}}
+        <input class="submit" type="submit" value="Valider">
+    </form>
+</section>
+{% endblock content %}

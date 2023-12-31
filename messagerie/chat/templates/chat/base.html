@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>SAE-302 Messagerie instantanée</title>
+    <style>
+        :root {
+            --main-bg-image: url("{% static 'images/bg.jpeg' %}");
+        }
+    </style>
+</head>
+<body>
+    
+    {% block content %}
+    {% endblock content %}
+
+    <script src="{% static "js/script.js" %}"></script>
+</body>
+</html>

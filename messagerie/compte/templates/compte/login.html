@@ -1,6 +1,16 @@
-<form method="post" >
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Connecter">
-</form>
-<a href='{% url "compte:createUser" %}'>Créer une compte</a> 
+{% extends "chat/base.html" %}
+
+{% block content %}
+<section id="login" class="login">
+    <p>Voulez-vous  chapoter? <br> Allez, connectez vous!</p>
+    <form method="post" >
+        {% csrf_token %}
+        <label for="id_username">Nom d&#x27;Utilisateur</label>
+        {{ form.username }}
+        <label for="id_password">Mot de passe</label>
+        {{ form.password }}
+        <input class="submit" type="submit" value="Connecter">
+    </form>
+    <a href='{% url "compte:createUser" %}' id="createUserBtn">Créer une compte</a> 
+</section>
+{% endblock content %}

@@ -12,7 +12,7 @@ class LoginRequired(LoginRequiredMixin):
 class GetChatView(LoginRequired, View):
     def get(self, request):
         # Chat.objects.filter(id__gt=10).delete()
-        return render(request, 'chat/chat.html', {'chats':request.user.get_chats()})
+        return render(request, 'chat/chat.html', {'chats':request.user.get_chats(), 'chat':request.user.get_chats()[0]})
     
 
 class CreateChatView(LoginRequired, View):
@@ -48,7 +48,8 @@ class HandleChatView(LoginRequired, View):
 
 class CreateGroupView(LoginRequired, View):
     def get(self, request):
-        return render(request, 'chat/chat.html', {'group': GroupForm()})
+        users = User.objects.exclude(id=request.user.id)
+        return render(request, 'chat/chat.html', {'group': GroupForm(), 'users':users})
 
     def post(self, request):
         id_users = dict(request.POST)['users']

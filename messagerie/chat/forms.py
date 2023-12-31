@@ -3,7 +3,8 @@ from django import forms
 from .models import Message, User, Chat
 
 class MessageForm(forms.ModelForm):
-    chat = forms.IntegerField(required=True)
+    chat = forms.IntegerField(widget=forms.HiddenInput() ,required=True)
+    text = forms.Textarea(attrs={'placeholder':'Taper le message...'})
     class Meta:
         model = Message
         fields = [
