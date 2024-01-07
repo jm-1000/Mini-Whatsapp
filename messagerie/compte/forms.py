@@ -1,6 +1,6 @@
 from django.core.validators import RegexValidator
 from django import forms
-from .models import Utilisateur
+from .models import User
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Nom d'Utilisateur")
@@ -16,7 +16,7 @@ class CreateUtilisateurForm(forms.ModelForm):
     password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput())
     username = forms.CharField()
     class Meta:
-        model = Utilisateur
+        model = User
         fields = [
             'username',
             'email',

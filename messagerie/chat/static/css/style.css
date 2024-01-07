@@ -76,13 +76,13 @@ p {
         color: var(--link-hover-color);
         border-radius: 0.1rem;
     }
-    a, 
+    /* a, 
     .chat li, 
     .createGr div label,
     .useropt a,
     .inputMsgBtn {
         transition: 10ms;
-    }
+    } */
     
     .header {
         grid-row: 1;
@@ -99,7 +99,7 @@ p {
             }
             .logouticon {
                 right: 2rem;
-                width: 1.2rem;
+                width: 1.3rem;
                 padding: .2rem;
             }
             .usernav {
@@ -135,6 +135,7 @@ p {
                     }
                     .userinfo  {
                         width: 66%;
+                        padding-left: 1rem;
                         margin: auto .3rem auto 0;
                         border-left: var(--border);
                     }
@@ -156,7 +157,6 @@ p {
                             overflow-wrap: break-word;
                         }
     .createUser, .login {
-        /* display: none; */
         position: absolute;
         left: 50%;
         top: 50%;
@@ -254,17 +254,30 @@ p {
         }
             .chat li {
                 padding: 0.5rem 0 0.4rem 2rem;
-                font-size: var(--medium-font-size);
+                font-size: var(--small-font-size);
             }
-                .chat li > a {
+                .chat li > p {
                     display: inline-flex;
                     justify-content: space-between;
                     width: 100%;
+                    height: 1.2rem;
+                    overflow: hidden;
+                    font-size: var(--main-font-size);
                 }
-                    .chat li a span {
+                    .chat li p span {
                         font-size: var(--small-font-size);
                         margin-right: 2rem;
                     }
+                .chat li > span {
+                    display: block;
+                    height: var(--medium-font-size);
+                    width: 81%;
+                    overflow-wrap:break-word;
+                    word-break: break-all;
+                    overflow: hidden;
+                }
+                
+
         .create {
             position: absolute;
             right: 0;
@@ -274,10 +287,10 @@ p {
             background-color: var(--main-bg-color);
             background-image: var(--main-bg-image);
             box-shadow: -.1rem .1rem .2rem black;
-            transition: all 0.4s;
+            transition: all 0.6s;
         }
         .moveCreate {
-            right: -100%;
+            top: -100%;
             transition: all 0.2s;
         }
             .createChat, .createGr {
@@ -295,7 +308,7 @@ p {
                         font-size: var(--main-font-size);
                     }
             .createGr {
-                display: block;
+                position: relative;
                 width: 80%;
             }
                 .createGr label{
@@ -314,7 +327,6 @@ p {
                     margin-top: .5rem;
                     padding-left: 1rem;
                 }
-                    
                         .createGr div label{
                             box-sizing: border-box;
                             width: 99%;
@@ -329,8 +341,22 @@ p {
                                 left: .1rem;
                                 margin: auto;
                             }
+                        .createGr img {
+                            display: none;
+                            position: absolute;
+                            top: 98%;
+                            right: 0;
+                            width: 1.2rem;
+                            padding: .4rem;
+                            border-radius: 2rem;
+                            background-color: var(--main-bg-color);
+                        }
+                        .createGr img:active {
+                            background-color: black;
+                        }
 
     .message {
+        position: relative;
         color: var(--message-color);
         grid-row: 2;
         display: grid;
@@ -341,24 +367,121 @@ p {
             position: sticky;
             padding: 0.5rem 0 0 3rem;
             z-index: 2;
-            font-size: var(--main-font-size);
+            /* font-size: var(--main-font-size); */
             color: var(--main-color);
         }
-            .message header img {
+        .message header p {
+            font-size: var(--small-font-size);
+            width: 99%;
+            height: 1rem;
+            overflow: hidden;
+        }
+            .message header a img {
                 position: absolute;
-                left: 0.2rem;
                 top: 0.7rem;
                 width: 1.2rem;
                 padding: .2rem;
             }
-        .readMsg {
+            .message header a:first-child img {
+                left: 0.2rem;
+            }
+            .message header a:last-child img {
+                display: block;
+                right: 0.2rem;
+            }
+          .aside {
+            z-index: 1;
+            position: absolute;
+            right: 0;
+            top: 2.9rem;
+            width: 70%;
+            height: fit-content;
+            padding-bottom: 1rem;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: var(--bg-readMsg);
+            background-image: var(--main-bg-image);
+            box-shadow: -.1rem .1rem .2rem black;
+            transition: all 0.4s;
+            color: var(--main-color);
+            font-size: var(--medium-font-size);
+        }
+        .moveAside {
+            right: -100%;
+            transition: all 0.2s;
+        }
+            .aside > div {
+                margin: 2rem 2rem;
+            }
+            .aside .group div > a {
+                display: block;
+                margin-top: 1rem;
+            }
+                .aside .group div div{
+                    display: inline-flex;
+                    justify-content: space-between;
+                    width: 100%;
+                    margin: .5rem 0;
+                }
+                .aside .group div input{
+                    width: 85%;
+                }
+                .aside .group img {
+                    width: 1rem;
+                    height: 1rem;
+                }
+            .aside > * {
+                margin: 1rem 2rem;
+            }
+            .aside .userinfo {
+                border: 0;
+            }
+            .aside .userinfo div{
+                margin: 1rem;
+                margin-left: 0;
+                width: 90%;
+
+            }
+                .aside > a {
+                    display: block;
+                    margin: 3rem 2rem 1rem;
+                }
+            .aside li {
+                display: inline-flex;
+                justify-content: space-between;
+                position: relative;
+                width: 100%;
+                margin-bottom: .4rem;
+            }
+            .aside img {
+                width: .8rem;
+                height: .8rem;
+                margin: auto .2rem;
+            }
+            .asideadm {
+                display: none;
+                height: 12vh;
+                overflow-y: auto;
+                position: relative;
+            }
+                .asideadm + img {
+                    display: none;
+                    position: absolute;
+                    right: 2rem;
+                    bottom: 1rem;
+                }
+
+            
+
+       .readMsg {
             grid-row: 2; 
+            z-index: 0;
             overflow-y: auto;
             overflow-x: hidden;
             background-color: var(--bg-readMsg);
         }
             .readMsg ul {
-                width: 95.5%;
+                width: 97%;
                 margin: 0;
                 padding-left: 0.4rem;
             }
@@ -366,34 +489,36 @@ p {
                 position: relative;
                 clear: both;
                 width: fit-content;
-                max-width: 70%;
-                padding: 0.4rem;
+                min-width: 1.5rem;
+                max-width: 80%;
                 margin-bottom: 0.6rem;
-                border: solid .67rem transparent;
+                border: solid .5rem transparent;
+                border-top: solid .25rem transparent;
                 background-color: var(--bg-message);
-                font-size: var(--main-font-size);
+                /* font-size: var(--main-font-size); */
             }
             .yourmessage {
                 left: .3rem;
-                border-radius: 0 1rem 1rem 1rem;
+                margin-left: 1%;
+                border-radius: .3rem;
             }
             .yourmessage::after, .mymessage::after {
                 content: '';
                 position: absolute;
-                top: 0;
+                top: 20%;
                 width: 0;
                 height: 0;
                 border: 1rem solid transparent;
                 border-top: 0;
-                margin-top: -0.65rem;
             }
             .yourmessage::after {
                 left: -2.3rem;
                 border-right-color: var(--bg-message);
             }
             .mymessage {
-                float: right;
-                border-radius: 1rem 0 1rem 1rem ;
+                margin:.5rem 0 .5rem auto ;
+                margin-right: 1.5%;
+                border-radius: .3rem;
             }
             .mymessage::after {
                 right: -1.3rem;
@@ -401,20 +526,37 @@ p {
                 border-left-color: var(--bg-message);
             }
                 .readMsg p {
-                    overflow-wrap: break-word;
-                }  
+                padding: 0;
+                margin-bottom: .4rem;
+                overflow-wrap: break-word;
+                }
                     .yourmessage span, .mymessage span {
                         position: absolute;
                         right: 0;
-                        bottom: -0.4rem;
+                        bottom: -0.45rem;
                         font-size: var(--small-font-size);
+                    }
+                    .yourmessage .spanuser {
+                        position: relative;
+                        top: -.1rem;
                     } 
+            .info {
+                width: fit-content;
+                margin: .2rem auto;
+                padding: .2rem;
+                text-align: center;
+                font-size: var(--medium-font-size);
+                background-color: black;
+                color: var(--main-color);
+
+
+            }  
             .dateMsg {
                 position: sticky;
                 top: 0.4rem;
                 z-index: 1;
                 text-align: center;
-                margin: 0.3rem;
+                margin: .5rem 0;
                 color: white;
                 font-size: var(--medium-font-size);
             }
@@ -427,7 +569,7 @@ p {
         .inputMsg {
             grid-row: 3;
         }
-            .inputMsg form {
+            .inputMsg div {
                 display: inline-flex;
                 width: 100%;
                 justify-content: space-around;
@@ -500,16 +642,28 @@ p {
         }
         .create {
             width: 40%;
-            left: 14.5rem;
+            left: 17%;
             top: 5rem;
             z-index: 1;
         }
-        /* .moveCreate {
+        .moveCreate {
             top: -100%;
-        } */
+        }
     .message {
         grid-column: 2 / span 2;
     }
+        .divtemp {
+            display: flex;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            color: var(--main-color);
+            border-left: var(--border);
+        }
+        .divtemp p{
+            text-align: center;
+            margin: auto;
+        }
         .message header {
             z-index: 3;
             background-image: var(--main-bg-image);
@@ -517,8 +671,11 @@ p {
             .message header img {
                 display: none;
             }
+        .aside {
+            width: 50%;
+        }
         .readMsg ul {
-            width: 98%;
+            width: 98.5%;
         }
         .inputMsg {
             border-left: 0.01rem solid var(--bg-readMsg);

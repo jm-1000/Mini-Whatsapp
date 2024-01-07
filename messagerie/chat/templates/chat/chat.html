@@ -16,19 +16,34 @@
             </div>
             <div class="userinfo">
                 <div>
-                    <h3>{{ user.get_username|capfirst }}</h3>
-                </div>
-                <div>
+                    <div>
+                        <h3>{{ user.get_username|capfirst }}</h3>
+                    </div>
                     <h5>Info</h5>
-                    <p>{{ user.info }}</p>
+                    <p>
+                        {% if not user.info %}
+                            Non renseigné
+                        {% endif %}
+                        {{ useryyy.info }}
+                    </p>
                 </div>
                 <div>
                     <h5>Mail</h5>
-                    <p>{{ user.email }}</p>
+                    <p>
+                        {% if not user.email %}
+                            Non renseigné
+                        {% endif %}
+                        {{ user.email }}
+                    </p>
                 </div>
                 <div>
                     <h5>Téléphone</h5>
-                    <p>{{ user.num_tel }}</p>
+                    <p>
+                        {% if not user.tel_num %}
+                            Non renseigné
+                        {% endif %}
+                        {{ user.tel_num }}
+                    </p>
                 </div>
             </div>  
         </nav>
@@ -37,119 +52,40 @@
         </a>
     </section>
 
-    {% comment %} {% if chats is not None %} {% endcomment %}
-        <section class="chat">
-            <header>
-                <h4>Chats</h4>
-                <a href="{% url 'chat:createChat' %}" id="createChatBtn">
-                    <img src="{% static 'images/create.png' %}" alt="createicon">
-                </a>
-            </header>
-            {% if users is not None %}
-                <div id="create" class="create moveCreate">
-                    <div id="createChat" class="createChat">
-                        <h4>Nouveau chat</h4>
-                        <ul>
-                            <li id="createGrBtn"><a href="{% url 'chat:createGr' %}">Créer un groupe</a></li>
-                            {% for user in users %}
-                                <li><a href="{% url 'chat:handleChat' user.id %}">{{ user }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    {% if group is not None %}
-                        <div id="createGr" class="createGr">
-                            <h4>Nouveau groupe</h4>
-                            <label for="id_name">Nom du groupe</label>
-                            {{ group.name }}
-                            <select hidden name="users" required id="id_users" multiple>
-                            </select>
-                            <div>
-                                {% for user in users %}
-                                <label><input type="checkbox" id="option" value="29"/>{{ user }}</label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            {% endif %}
-
-            <ul>
-            {% for chat in chats %}
-                {% if chat.groupe %}
-                    <li> 
-                        <a href="{% url "chat:handleGr" chat.id %}">
-                            {{ chat }}
-                            <span>{{ chat.get_messages.last.time }}</span>
-                        </a>
-                        <span>{{ chat.get_messages.last }}</span>
-                    </li>
-                {% else %}
-                    {% for elem in chat.users.all %}
-                        {% if user != elem %}
-                            <li>
-                                <a href="{% url "chat:handleChat" elem.id %}">
-                                    {{ elem }}
-                                    <span>{{ chat.get_messages.last.time }}</span>
-                                </a>
-                                <span>{{ chat.get_messages.last }}</span>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </section>
-    {% comment %} {% endif %} {% endcomment %}
+    <section class="chat">
+        <header>
+            <h4>Chats</h4>
+            <a  id="createChatBtn">
+                <img src="{% static 'images/create.png' %}" alt="createicon">
+            </a>
+        </header>
+        <div id="create" class="create moveCreate">
+            <div id="createChat" class="createChat">
+                <h4>Nouveau chat</h4>
+                <ul>
+                    <li id="createGrBtn"><a>Créer un groupe</a></li>
+                </ul>
+            </div>
+            <div id="createGr" class="createGr">
+                <h4>Nouveau groupe</h4>
+            </div>
+        </div>
+        <ul>
+        </ul>
+    </section>
 
 
     <section class="message">
-        <header>
-            <a id="backBtn">
-                <img src="../static/back.png" alt="">
-            </a>
-            <a>
-                {% if chat.groupe %}
-                    {{ chat }}
-                {% else %}
-                    {% for elem in chat.users.all %}
-                        {% if user != elem %}
-                            {{ elem }}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </a>
-            <p></p>
-        </header>
-        <div class="readMsg">
-            <ul>
-                {% for message in chat.get_messages %}
-                    {% comment %} <li class="dateMsg"><span>{{message.date}}</span></li> {% endcomment %}
-                    {% if message.user == user %}
-                        <li class="mymessage">
-                    {% else %}
-                        <li class="yourmessage">
-                    {% endif %}
-                            <p>{{ message }}</p>
-                            <span>{{ message.time }}</span>
-                        </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="inputMsg">
-            <form method="post">
-                {% csrf_token %}
-                {{ message.text }}
-                {{ message.chat }}
-                <input class='inputMsgBtn' type="image" src="{% static 'images/sender.png' %}" name="submit" alt="Envoyer">
-            </form>
+        <div class="divtemp">
+            <p>Sélectionner ou créer un nouveau chat.</p>
         </div>
     </section>
+
+    <script src="{% static 'js/script.js' %}"></script>
 
 {% endif %}
 {% endblock content %}
 
 
-
-
+    
 

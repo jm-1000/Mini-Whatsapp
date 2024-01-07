@@ -23,7 +23,7 @@ class LoginView(View):
             user = authenticate(request, username=data['username'], password=data['password'])
         if user is not None:
             login(request, user)
-            return redirect('chat:getChat')
+            return redirect('chat:indexChat')
         else:
             return self.get(request)
 

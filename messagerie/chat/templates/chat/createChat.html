@@ -1,0 +1,28 @@
+{% load static %}
+{% if users is not None %}
+    <div id="createChat" class="createChat">
+            <h4>Nouveau chat</h4>
+            <ul>
+                <li id="createGrBtn">Créer un groupe</li>
+                {% for user in users %}
+                    <li class='user'>{{ user }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if group is not None %}
+            <div id="createGr" class="createGr">
+                <h4>Nouveau groupe</h4>
+                <label for="id_name">Nom du groupe</label>
+                {{ group.name }}
+                <select hidden name="users" required id="id_users" multiple>
+                </select>
+                <div>
+                    {% for user in users %}
+                    <label><input type="checkbox" id="option" value="{{ user }}"/>{{ user }}</label>
+                    {% endfor %}
+                </div>
+                <img src="{% static 'images/create.png' %}" alt="createicon">
+            </div>
+        {% endif %}
+{% endif %}

@@ -37,11 +37,23 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+
+    "daphne",#
+
     "django.contrib.staticfiles",
 
-    "chat",
-    "compte",
+    "channels",#
+
+    "chat",#
+    "compte",#
 ]
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -71,6 +83,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "messagerie.asgi.application"
 WSGI_APPLICATION = "messagerie.wsgi.application"
 
 
@@ -85,7 +98,7 @@ DATABASES = {
 }
 
 # Costum user model
-AUTH_USER_MODEL = 'compte.Utilisateur'
+AUTH_USER_MODEL = 'compte.User'
 
 
 # Password validation
@@ -123,8 +136,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "chat/static"),]
+
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "static_root")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR),"static_cdn","media_root")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# settings.py
+
+if DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

@@ -1,0 +1,151 @@
+{% load static %}
+        <header>
+            <a id="backBtn">
+                <img src="{% static "images/back.png" %}" alt="backicon">
+            </a>
+            {% if chat.groupe %}
+            <a>{{ chat }}</a>
+            <p> 
+                {% with users=chat.users.all %}
+                    {% for user in users %}
+                        @{{user|capfirst}}
+                        {% if users.last != user %}, {% endif %}
+                    {% endfor %}
+                {% endwith %}
+            </p>
+            {% else %}
+                {% for elem in chat.users.all %}
+                    {% if user != elem %}
+            <a>          {{ elem|capfirst }}</a>
+                    {% endif %}
+                {% endfor %}
+            <p></p>
+            {% endif %}
+
+            <a id='menuBtn'>
+                <img src="{% static "images/menu.png" %}" alt="menuicon">
+            </a>
+        </header>
+        <aside class='aside moveAside' >
+            {% if chat.groupe %}
+            <div class='group'>
+                {% if chat.adm == user %}
+                <div>
+                    <label >Nouveau nom</label>
+                    <div >
+                        <input id='inputGr' type="text"/>
+                        <img id='renameGr' src="{% static "images/save.png" %}" alt="deleteicon">
+                    </div>
+                    <a id='deleteGr'>Supprimer le groupe</a>
+                    <a id='addUserGr'>Ajouter de membre</a>
+                </div>
+                {% endif %}
+                {% if chat.adm != user %}
+                    <a id='deleteGr'>Sortir du groupe</a>
+                {% endif %}
+                    <h4 class='members'>{{chat.users.all.count}} membres</h4>
+                    <ul class='members'>
+                        {% for membre in chat.users.all %}
+                            <li class="user"> 
+                                {{membre|capfirst}} 
+                                {% if chat.adm == user %}
+                                <img id='{{membre}}' src="{% static "images/delete.png" %}" alt="deleteicon">
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul> 
+                {% if chat.adm == user %}
+                    <ul class='asideadm'>
+                        {% for user in users %}
+                        {% if user not in chat.users.all %}
+                            <li>{{ user }}<input type="checkbox" class="option" value="{{ user }}"/></li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <img id='addUserGrBtn' src="{% static "images/save.png" %}" alt="deleteicon">
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="userinfo">
+                {% for elem in chat.users.all %}
+                    {% if user != elem %}
+                <div>
+                    <h3>{{ elem.get_username|capfirst }}</h3>
+                </div>
+                <div>
+                    <h5>Info</h5>
+                    <p>
+                        {% if not elem.info %}
+                            Non renseigné
+                        {% endif %}
+                        {{ elem.info }}
+                    </p>
+                </div>
+                <div>
+                    <h5>Mail</h5>
+                    <p>
+                        {% if not elem.email %}
+                            Non renseigné
+                        {% endif %}
+                        {{ elem.email }}
+                    </p>
+                </div>
+                <div>
+                    <h5>Téléphone</h5>
+                    <p>
+                        {% if not elem.tel %}
+                            Non renseigné
+                        {% endif %}
+                        {{ elem.tel_num }}
+                    </p>
+                </div>
+                    {% endif %}
+                {% endfor %}
+                <a id='deleteGr'>Supprimer le chat</a>
+            </div>  
+            {% endif %}
+        </aside>
+        <div class="readMsg">
+            <ul id='id{{chat.uuid}}'>
+            {% regroup messages by date as msg_list %}
+            {% for date_group in msg_list %}
+                <li class="dateMsg"><span>{{date_group.grouper}}</span></li>
+                {% for msg in date_group.list %}
+                    {% if msg.content.type != 'normal' %}
+                        {% if msg.content.user != user and msg.content.type == 'join' %}
+                <li class="info">{{msg.content}}</li>
+                        {% elif msg.content.user == user and msg.content.type == 'create' %}
+                <li class="info">{{msg.content}}</li>
+                        {% elif msg.content.type == 'left' and msg.content.user != user %}
+                <li class="info">{{msg.content}}</li>
+                        {% elif msg.content.type == 'info' %}
+                <li class="info">{{msg.content}}</li>
+                        {% endif %}
+                    {% else %}
+                        {% if msg.content.user == user %}
+                <li class="mymessage">
+                        {% else %}
+                <li class="yourmessage">
+                            {% if chat.groupe %}
+                    <span class='spanuser'>@{{msg.content.user|capfirst}}</span>
+                            {% endif %}
+                        {% endif %}
+                    <p>{{ msg.content }}</p>
+                    <span>{{ msg.content.timestamp.time }}</span>
+                </li>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="inputMsg">
+            <div >
+                <textarea name="text" placeholder="Taper le message..." maxlength="2000" required id="id_text"></textarea>
+                <input id='inputMsgBtn' class='inputMsgBtn' type="image" src="{% static 'images/sender.png' %}" name="submit" alt="Envoyer">
+            </div>
+        </div>
+    </section>
+
+
+    
+
