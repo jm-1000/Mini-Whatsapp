@@ -1,3 +1,6 @@
+
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 from .views import *
 import uuid 
@@ -13,3 +16,5 @@ urlpatterns = [
     # path('create/group/<uuid:uuid>', HandleGroupView.as_view(), name='handleGr'),
     # path('delete/<int:pk>', DeleteChatView.as_view(), name='deleteChat'),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

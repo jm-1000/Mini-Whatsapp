@@ -1,9 +1,8 @@
-from collections.abc import Iterable
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from uuid import uuid4
 from django.urls import reverse
+import pytz
 
 
 # Create your models here.
@@ -33,21 +32,31 @@ class Chat(models.Model):
         return self.adm == user
     
     def get_messages(self):
-        return Message.objects.filter(chat=self).order_by('timestamp')
+        paris_timezone = pytz.timezone('Europe/Paris')
+        messages = Message.objects.filter(chat=self).order_by('timestamp')
+        if messages:
+            for msg in messages:
+                msg.timestamp = msg.timestamp.astimezone(paris_timezone)
+        return messages
     
     def get_absolute_url(self):
         return reverse("chat:handleGr", args=[str(self.uuid)])
 
 
 class Message(models.Model):
-    Choices = [
+    typeChoices = [
                 ('Info', 'info'),  
                 ('Create', 'create'),  
                 ("Join", "join"), 
                 ("Left", "left"), 
                 ("Normal", "normal")]
+    statusChoices = [
+                ('sent', 'Sent'),  
+                ('Delivered', 'delivered'),  
+                ("Received", "received"), ]
 
-    type = models.CharField(choices=Choices, default='normal', max_length=6)
+    type = models.CharField(choices=typeChoices, default='normal', max_length=6)
+    status = models.CharField(choices=statusChoices, default='sent', max_length=9)
     text = models.TextField(blank=False, max_length=2000)
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

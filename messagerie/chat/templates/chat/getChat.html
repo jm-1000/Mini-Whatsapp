@@ -1,6 +1,6 @@
 {% for msg in messages %}
     {% if msg  %}
-        <li id='id{{msg.chat.uuid}}'> 
+        <li class='chatChild' id='id{{msg.chat.uuid}}'> 
             <p>
                 {% if msg.chat.groupe %}
                     {{ msg.chat|capfirst }}
@@ -22,7 +22,29 @@
                 {% endif %}
                 {{ msg.text|slice:":100" }}
             </span>
-        </li>
         {% endif %}
+            <div style='display:none;position:absolute;' > 
+                <p id='id{{msg.chat.uuid}}'>
+                    {% if msg.chat.groupe %}
+                        {{ msg.chat|capfirst }}
+                    {% else %} 
+                        {% for elem in msg.chat.users.all %}
+                            {% if user != elem %}
+                                {{ elem|capfirst }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+            {% if msg.chat.groupe and msg.type == 'join' or msg.type == 'create' %}
+                    : Nouvelles!
+            {% else %}
+                    {% if msg.chat.groupe %}
+                        ({{ msg.user | capfirst }}) 
+                    {% endif %}
+                    : {{ msg.text|slice:":100" }}
+            {% endif %}
+            </div>
+        </li>
+        
     {% endif %}
 {% endfor %}

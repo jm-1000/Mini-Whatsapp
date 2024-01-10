@@ -3,6 +3,9 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.views import View
 from .models import User, Message, Chat
 from .forms import MessageForm, GroupForm
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+import pytz
 
 # Create your views here.
 class LoginRequired(LoginRequiredMixin):
@@ -16,10 +19,17 @@ class GetIndexView(LoginRequired, View):
 class GetChatView(LoginRequired, View):
     def get(self, request):
         latestMsgs = []
+        paris_timezone = pytz.timezone('Europe/Paris')
         for chat in request.user.get_chats():
-            msgs = chat.get_messages()
-            if msgs:
-                latestMsgs.append(chat.get_messages().last())
+            msg = chat.get_messages().last()
+            if msg:
+                msg.timestamp = msg.timestamp.astimezone(paris_timezone)
+                if (msg.type == 'normal' and msg.user != request.user and 
+                    msg.status != 'delivered'):
+                    msg.status = 'delivered'
+                    msg.save()
+                    sendToConsumers(chat.uuid, msg.user)
+                latestMsgs.append(msg)
         latestMsgs = sorted(latestMsgs, key=lambda x:x.timestamp, reverse=True)
         return render(request, 'chat/getChat.html', {'messages':latestMsgs})
     
@@ -38,13 +48,27 @@ class HandleChatView(LoginRequired, View):
         if request.user in chat.users.all():
             messages = []
             for msg in chat.get_messages():
+                if (msg.type == 'normal' and msg.status != 'received' and 
+                    msg.user != request.user):
+                    msg.status = 'received'
+                    msg.save()
+                    sendToConsumers(chat.uuid, msg.user)
                 dictMsg = {'date':str(msg.timestamp.date()), 'content':msg}
                 messages.append(dictMsg)
             return render(request, 'chat/handleChat.html', {'messages':messages,
                                                             'chat':chat,
                                                             'users':users})
-        return HttpResponse("<p>Vous n'avez pas accès à ce chat ou groupe</p>")
-            
+        return HttpResponse('''<div class='divtemp'> <p>Vous n'avez plus accès
+                             à ce chat ou groupe</p></div>''')
+
+
+
+def sendToConsumers(uuid, user):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)('user-' + str(user), {
+                                             'type':'sendToChat', 
+                                             'action':'changeChat', 
+                                             'chat':str(uuid), 'status':'' })
 #     def post(self, request, pk):
 #         target_user = User.objects.get(pk=pk)
 #         data = request.POST
@@ -84,8 +108,9 @@ class HandleChatView(LoginRequired, View):
 class HandleGroupView(LoginRequired, View):
     def get(self, request, uuid):
         group = Chat.objects.get(uuid=uuid)
-        return render(request, 'chat/chat.html', {  'message': MessageForm(initial={'chat':group.id}),
-                                                    'chat':group})
+        return render(request, 'chat/chat.html', {  
+            'message': MessageForm(initial={'chat':group.id}),
+            'chat':group})
     
 #     def post(self, request, pk):
 #             group = Chat.objects.get(pk=request.POST['chat'])

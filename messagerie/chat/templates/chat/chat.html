@@ -24,7 +24,7 @@
                         {% if not user.info %}
                             Non renseigné
                         {% endif %}
-                        {{ useryyy.info }}
+                        {{ user.info }}
                     </p>
                 </div>
                 <div>
@@ -50,6 +50,9 @@
         <a href="{% url 'compte:logout' %}" id="logout">
             <img class="logouticon" src="{% static 'images/logout.png' %}" alt="logouticon">
         </a>
+        <div id='alert'>
+            <p></p>
+        </div>
     </section>
 
     <section class="chat">

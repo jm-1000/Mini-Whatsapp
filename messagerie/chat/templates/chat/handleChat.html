@@ -1,6 +1,6 @@
 {% load static %}
         <header>
-            <a id="backBtn">
+            <a id="backBtn" class='backBtn'>
                 <img src="{% static "images/back.png" %}" alt="backicon">
             </a>
             {% if chat.groupe %}
@@ -36,20 +36,20 @@
                         <input id='inputGr' type="text"/>
                         <img id='renameGr' src="{% static "images/save.png" %}" alt="deleteicon">
                     </div>
-                    <a id='deleteGr'>Supprimer le groupe</a>
-                    <a id='addUserGr'>Ajouter de membre</a>
+                    <a id='deleteGr' class='deleteGr'><p>Supprimer le groupe</p></a>
+                    <a id='addUserGr'><div>Ajouter membre</div><div style='display:none;'>Supprimer membre</div></a>
                 </div>
                 {% endif %}
                 {% if chat.adm != user %}
-                    <a id='deleteGr'>Sortir du groupe</a>
+                    <a id='deleteGr' class='deleteGr'>Sortir du groupe</a>
                 {% endif %}
                     <h4 class='members'>{{chat.users.all.count}} membres</h4>
                     <ul class='members'>
-                        {% for membre in chat.users.all %}
+                        {% for member in chat.users.all %}
                             <li class="user"> 
-                                {{membre|capfirst}} 
-                                {% if chat.adm == user %}
-                                <img id='{{membre}}' src="{% static "images/delete.png" %}" alt="deleteicon">
+                                {{member|capfirst}} 
+                                {% if chat.adm == user and member != chat.adm %}
+                                <img id='{{member}}' src="{% static "images/delete.png" %}" alt="deleteicon">
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -101,7 +101,7 @@
                 </div>
                     {% endif %}
                 {% endfor %}
-                <a id='deleteGr'>Supprimer le chat</a>
+                <a id='deleteGr' class='deleteGr'>Supprimer le chat</a>
             </div>  
             {% endif %}
         </aside>
@@ -124,14 +124,26 @@
                     {% else %}
                         {% if msg.content.user == user %}
                 <li class="mymessage">
+                    <p>{{ msg.content }}</p>
+                    <span>{{ msg.content.timestamp.time }} </span>
+                            {% if msg.content.status == 'delivered' or msg.content.status == 'received' %}
+                    <span class='seen'>o</span>
+                            {% else %}
+                    <span>o</span>
+                            {% endif %}
+                            {% if msg.content.status == 'received' %}
+                    <span class='seen'>o</span>
+                            {% else %}
+                    <span>o</span>
+                            {% endif %}
                         {% else %}
                 <li class="yourmessage">
                             {% if chat.groupe %}
                     <span class='spanuser'>@{{msg.content.user|capfirst}}</span>
                             {% endif %}
-                        {% endif %}
                     <p>{{ msg.content }}</p>
-                    <span>{{ msg.content.timestamp.time }}</span>
+                    <span>{{ msg.content.timestamp.time }} </span>
+                        {% endif %}
                 </li>
                     {% endif %}
                 {% endfor %}
