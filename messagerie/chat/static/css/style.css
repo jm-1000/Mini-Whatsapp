@@ -75,6 +75,7 @@ p {
         background-color: var(--link-hover-bg-color);
         color: var(--link-hover-color);
         border-radius: 0.1rem;
+        cursor: pointer;
     }
     /* a, 
     .chat li, 
@@ -592,10 +593,12 @@ p {
                         right: 1.2rem;
                     }
                     .mymessage p + span + span {
+                        font-size: small;
                         right: .45rem;
                         color: gray;
                     }
                     .mymessage p + span + span + span {
+                        font-size: small;
                         color: gray;
                     }
                     .seen {

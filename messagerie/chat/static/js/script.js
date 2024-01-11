@@ -70,13 +70,14 @@ function fetchData(url, func) {
 }
 
 function websocketClient() {
-  websocket = new WebSocket('ws://' + window.location.host);
+  websocket = new WebSocket('wss://' + window.location.host);
   websocket.onopen = function(e){
     console.log('Connexion Websocket réussi.')
   }
   websocket.onmessage = function(e){
     let data = JSON.parse(e.data)
-    console.log(data.action)
+    console.log('')
+    console.log('action',data.action)
     switch (data.action) {
       case "getChats":
         getChats();
@@ -96,7 +97,7 @@ function websocketClient() {
       case "changeChat":
         postChangeChat(data.chat);
         break
-      case 'connected':
+      case 'userConnected':
         userStatus(data.status, data.chat);
         break
       }
@@ -169,13 +170,12 @@ function websocketClient() {
       target.innerHTML = sectionTemp.querySelector('#id' + uuid).innerHTML;
       chatList.prepend(target);
     } else {
-      // getChats();
       chatList.prepend(sectionTemp.querySelector('#id' + uuid));
     }
   }
 
   function userStatus(status, uuid) {
-    if (msgClass.querySelector('#id' + uuid)){
+    if (msgClass.querySelector('#id' + uuid) && status != 'None'){
       msgClass.querySelector('header p').innerHTML = status;
     }
   }
@@ -185,23 +185,20 @@ function websocketClient() {
     readMsg = document.querySelector('.readMsg > ul');
     if (readMsg){
       if (readMsg.getAttribute('id') === ('id' + uuid)){
-        // setupChat.init(uuid, false)
-        console.log('ok')
         fetchData(getChatUrl + uuid, function(data) {
           sectionTemp.innerHTML = data;
           let ul = msgClass.querySelector(".readMsg ul")
           ul.innerHTML = sectionTemp.querySelector(".readMsg ul").innerHTML
           let header = msgClass.querySelector("header")
           header.innerHTML = sectionTemp.querySelector("header").innerHTML
+          websocketSend(uuid, 'userConnected')
           let create = msgClass.querySelector(".aside")
           create.innerHTML = sectionTemp.querySelector(".aside").innerHTML
           if (aside.querySelector('#inputGr')) {
-            console.log(uuid)
             menuGrAdmOperation(uuid)
           }
         })
       }
-    // getChats()
     }
   }
 
@@ -211,7 +208,8 @@ function websocketClient() {
     let readMsg = document.querySelector('.readMsg ul');
     let chat = chatList.querySelector('#' + readMsg.getAttribute('id'));
     if (readMsg && chat) {
-      setupChat.switchTabMobileScreen()
+      console.log('ok')
+      setupChat.displayChatMobileScreen()
       let div = noSelectedChatMsg.cloneNode(true), text;
       text = "Le chat ou groupe a été supprimé!<br>";
       div.firstElementChild.innerHTML = text + div.firstElementChild.innerHTML
@@ -247,16 +245,17 @@ function websocketClient() {
 
 setupChat = (function() {
   
-  function init(uuid, switchTab=true) {
+  function init(uuid) {
+    console.log('Erreur 1', uuid)
     websocketSend(uuid)
     fetchData(getChatUrl + uuid, function(data) {
       msgClass.innerHTML = data;
       moveScrollAtBottom()
-      switchTabMobileScreen(switchTab);        
+      displayChatMobileScreen(true);        
       sendingMsg();
       autoSizeTextarea();
       menuListenner()
-      websocketSend(uuid, 'connected')
+      websocketSend(uuid, 'userConnected')
     })
   }
 
@@ -274,9 +273,10 @@ setupChat = (function() {
     })
   }
 
-  function switchTabMobileScreen(switchTab) {  
+  function displayChatMobileScreen(display=false) {
     if (!mediaScreen.matches ) {
-        if (chatList.checkVisibility() && switchTab){
+    console.log('Erreur 2')  
+        if (display){
           chatList.parentElement.style.display = 'none';
         } else {
           chatList.parentElement.style.display = 'block';
@@ -296,6 +296,7 @@ setupChat = (function() {
         if (input.value.trim() != "") {
           websocketSend(uuid, 'message', input.value);
           input.value = '';
+          input.style.height = '1rem';
         }
     }
     msgClass.addEventListener('click', function(e) {
@@ -334,16 +335,10 @@ setupChat = (function() {
       menuGrAdmOperation(uuid)
     } else {
       aside.addEventListener('click', (e) => {
-        console.log(e.target)
         if (e.target.classList.contains('deleteGr')) {
           websocketSend(uuid, 'deleteGr')
           aside.classList.add('moveAside');
-          switchTabMobileScreen()
-          msgClass.innerHTML = noSelectedChatMsg.outerHTML
         }
-      // deleteGr.addEventListener('click', (e) => {
-        
-      // }) 
       })
     }
   }
@@ -351,7 +346,7 @@ setupChat = (function() {
   return {
     init,
     moveScrollAtBottom,
-    switchTabMobileScreen
+    displayChatMobileScreen
   }
 })();
 
@@ -368,7 +363,7 @@ function createChatOperations(data) {
 
   createChat.querySelectorAll('.user').forEach(element => {
     element.addEventListener('click', (e) => {
-      websocketSend(null, action='createChat', null, usernames=e.target.innerHTML);
+      websocketSend(null, action='createChat', null, usernames=e.target.getAttribute('value'));
     })
   })
 

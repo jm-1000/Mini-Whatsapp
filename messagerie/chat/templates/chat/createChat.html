@@ -5,7 +5,7 @@
             <ul>
                 <li id="createGrBtn">Créer un groupe</li>
                 {% for user in users %}
-                    <li class='user'>{{ user }}</li>
+                    <li class='user' value="{{ user }}">{{ user|capfirst }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -19,7 +19,7 @@
                 </select>
                 <div>
                     {% for user in users %}
-                    <label><input type="checkbox" id="option" value="{{ user }}"/>{{ user }}</label>
+                    <label><input type="checkbox" id="option" value="{{ user }}"/>{{ user|capfirst }}</label>
                     {% endfor %}
                 </div>
                 <img src="{% static 'images/create.png' %}" alt="createicon">

@@ -51,6 +51,9 @@
                                 {% if chat.adm == user and member != chat.adm %}
                                 <img id='{{member}}' src="{% static "images/delete.png" %}" alt="deleteicon">
                                 {% endif %}
+                                {% if chat.adm != user and member == chat.adm %}
+                                (adm)
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul> 
@@ -58,7 +61,7 @@
                     <ul class='asideadm'>
                         {% for user in users %}
                         {% if user not in chat.users.all %}
-                            <li>{{ user }}<input type="checkbox" class="option" value="{{ user }}"/></li>
+                            <li>{{ user|capfirst }}<input type="checkbox" class="option" value="{{ user }}"/></li>
                         {% endif %}
                         {% endfor %}
                     </ul>

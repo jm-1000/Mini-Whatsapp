@@ -35,7 +35,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
                                                    self.channel_name)
             except: pass
 
-        elif action == 'connected':
+        elif action == 'userConnected':
             self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
             await self.sendStatusUser()
 
@@ -71,7 +71,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
 
     async def handleMsg(self, text=None, type='normal', username=None, 
                         action='message', uuid=None):
-        if action == 'connected' : chat = uuid 
+        if action == 'userConnected' : chat = uuid 
         else: chat = str(self.chat.uuid)
         if text and not username:
             if text.isspace(): return 0
@@ -196,18 +196,18 @@ class GetWebSocket(AsyncWebsocketConsumer):
                 else:
                     text = str(self.user.last_login)[:16]
                 user = getUser2((chat[0]).split(' - '), self.user.username)
-                await self.handleMsg(text, username=user, action='connected', 
+                await self.handleMsg(text, username=user, action='userConnected', 
                                      uuid=chat[1])
         
         elif not self.chat.groupe:
             user = getUser2(str(self.chat).split(' - '), self.user.username)
             if user in self.connectedUsers:
-                await self.send(json.dumps({'action':'connected', 
+                await self.send(json.dumps({'action':'userConnected', 
                                             'status': "En ligne",
                                             'chat': str(self.chat.uuid) }))
             else:
                 user = await self.get_user(user)
-                await self.send(json.dumps({'action':'connected', 
+                await self.send(json.dumps({'action':'userConnected', 
                                             'status': str(user.last_login)[:16],
                                             'chat': str(self.chat.uuid) }))
 
