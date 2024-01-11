@@ -75,7 +75,6 @@ p {
         background-color: var(--link-hover-bg-color);
         color: var(--link-hover-color);
         border-radius: 0.1rem;
-        cursor: pointer;
     }
     /* a, 
     .chat li, 
@@ -593,12 +592,14 @@ p {
                         right: 1.2rem;
                     }
                     .mymessage p + span + span {
-                        font-size: small;
+                        font-size: .6rem;
+                        font-weight:bolder;
                         right: .45rem;
                         color: gray;
                     }
                     .mymessage p + span + span + span {
-                        font-size: small;
+                        font-size: .6rem;
+                        font-weight: bolder;
                         color: gray;
                     }
                     .seen {
@@ -671,14 +672,16 @@ p {
         .chat li:hover, 
         .createGr div label:hover,
         .useropt a:hover,
+        .aside img:hover,
         .inputMsgBtn:hover {
             background-color: var(--link-hover-bg-color);
             color: var(--link-hover-color);
             border-radius: 0.1rem;
+            cursor: pointer;
     }
     .header {
         grid-column: 1 / -1;
-        z-index: 5;
+        z-index: 5;   
         background-image: var(--main-bg-image);
     }
         .usericon {

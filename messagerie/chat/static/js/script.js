@@ -74,9 +74,9 @@ function websocketClient() {
   websocket.onopen = function(e){
     console.log('Connexion Websocket réussi.')
   }
+
   websocket.onmessage = function(e){
     let data = JSON.parse(e.data)
-    console.log('')
     console.log('action',data.action)
     switch (data.action) {
       case "getChats":
@@ -181,20 +181,18 @@ function websocketClient() {
   }
 
   function postChangeChat(uuid) {
-    const aside = document.querySelector("aside")
     readMsg = document.querySelector('.readMsg > ul');
     if (readMsg){
       if (readMsg.getAttribute('id') === ('id' + uuid)){
         fetchData(getChatUrl + uuid, function(data) {
           sectionTemp.innerHTML = data;
-          let ul = msgClass.querySelector(".readMsg ul")
-          ul.innerHTML = sectionTemp.querySelector(".readMsg ul").innerHTML
-          let header = msgClass.querySelector("header")
-          header.innerHTML = sectionTemp.querySelector("header").innerHTML
+          msgClass.childNodes.forEach((item, i) => {
+            if (item.nodeName != '#text' && i<6){
+              msgClass.childNodes[i].innerHTML = sectionTemp.childNodes[i].innerHTML
+            }
+          })
           websocketSend(uuid, 'userConnected')
-          let create = msgClass.querySelector(".aside")
-          create.innerHTML = sectionTemp.querySelector(".aside").innerHTML
-          if (aside.querySelector('#inputGr')) {
+          if (msgClass.querySelector('aside #inputGr')) {
             menuGrAdmOperation(uuid)
           }
         })
@@ -208,7 +206,6 @@ function websocketClient() {
     let readMsg = document.querySelector('.readMsg ul');
     let chat = chatList.querySelector('#' + readMsg.getAttribute('id'));
     if (readMsg && chat) {
-      console.log('ok')
       setupChat.displayChatMobileScreen()
       let div = noSelectedChatMsg.cloneNode(true), text;
       text = "Le chat ou groupe a été supprimé!<br>";
@@ -246,10 +243,10 @@ function websocketClient() {
 setupChat = (function() {
   
   function init(uuid) {
-    console.log('Erreur 1', uuid)
     websocketSend(uuid)
     fetchData(getChatUrl + uuid, function(data) {
       msgClass.innerHTML = data;
+      
       moveScrollAtBottom()
       displayChatMobileScreen(true);        
       sendingMsg();
@@ -275,7 +272,6 @@ setupChat = (function() {
 
   function displayChatMobileScreen(display=false) {
     if (!mediaScreen.matches ) {
-    console.log('Erreur 2')  
         if (display){
           chatList.parentElement.style.display = 'none';
         } else {

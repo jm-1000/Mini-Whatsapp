@@ -41,7 +41,7 @@
                 </div>
                 {% endif %}
                 {% if chat.adm != user %}
-                    <a id='deleteGr' class='deleteGr'>Sortir du groupe</a>
+                    <a id='deleteGr' class='deleteGr'><p>Sortir du groupe</p></a>
                 {% endif %}
                     <h4 class='members'>{{chat.users.all.count}} membres</h4>
                     <ul class='members'>
@@ -104,7 +104,7 @@
                 </div>
                     {% endif %}
                 {% endfor %}
-                <a id='deleteGr' class='deleteGr'>Supprimer le chat</a>
+                <a id='deleteGr' class='deleteGr'><p>Supprimer le chat</p></a>
             </div>  
             {% endif %}
         </aside>

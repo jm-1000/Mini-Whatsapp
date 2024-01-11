@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json, time
 from channels.db import database_sync_to_async as db_query 
 from .models import Chat, User, Message
+import pytz
 
 class GetWebSocket(AsyncWebsocketConsumer):
     connectedUsers = []
@@ -185,6 +186,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
                     await db_query(self.chat.delete)()
 
     async def sendStatusUser(self, all=None):
+        paris_timezone = pytz.timezone('Europe/Paris')
         getUser2 = lambda x, y: x[1] if y != x[1] else x[0]
         if all:
             chats = await db_query(self.user.get_chats)(group=False)
@@ -194,7 +196,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
                 if self.user.username in self.connectedUsers:
                     text = "En ligne"
                 else:
-                    text = str(self.user.last_login)[:16]
+                    text = str(self.user.last_login.astimezone(paris_timezone))[:16]
                 user = getUser2((chat[0]).split(' - '), self.user.username)
                 await self.handleMsg(text, username=user, action='userConnected', 
                                      uuid=chat[1])
@@ -208,7 +210,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
             else:
                 user = await self.get_user(user)
                 await self.send(json.dumps({'action':'userConnected', 
-                                            'status': str(user.last_login)[:16],
+                                            'status': str(user.last_login.astimezone(paris_timezone))[:16],
                                             'chat': str(self.chat.uuid) }))
 
     @db_query
