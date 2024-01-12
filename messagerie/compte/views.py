@@ -1,9 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from .forms import CreateUtilisateurForm, LoginForm
+from .forms import CreateUserForm, LoginForm, UpdateUserForm
 from django.db.utils import IntegrityError
 
 
@@ -11,6 +10,7 @@ from django.db.utils import IntegrityError
 @login_required(login_url = '/login')
 def index(request):
     return render(request, 'compte/index.html', {'user':request.user})
+
 
 class LoginView(View):
     def get(self, request):
@@ -20,12 +20,12 @@ class LoginView(View):
         form, user = LoginForm(request.POST), None
         if form.is_valid():
             data = form.cleaned_data
-            user = authenticate(request, username=data['username'], password=data['password'])
-        if user is not None:
+            user = authenticate(request, username=data['username'].lower(), 
+                                password=data['password'])
+        if user:
             login(request, user)
             return redirect('chat:indexChat')
-        else:
-            return self.get(request)
+        return render(request, 'compte/login.html', {'form':form})
 
 
 class LogoutView(View):
@@ -40,24 +40,29 @@ class CreateUserView(View):
     
     def get(self, request):
         if request.user.is_authenticated:
-            form = CreateUtilisateurForm(instance=request.user)
+            form = UpdateUserForm(instance=request.user)
         else: 
-            form = CreateUtilisateurForm()
+            form = CreateUserForm()
         return self.render_page([request, form])
     
     def post(self, request):
-        form = CreateUtilisateurForm(request.POST)
         if request.user.is_authenticated:
-            try: 
+            form = UpdateUserForm(request.POST)
+            if form.is_valid():
                 form.update(request.user)
-                return redirect('compte:login')
-            except IntegrityError:
-                return self.render_page([request, form]) 
-        elif form.is_valid():
+                login(request, request.user)
+                return redirect('chat:indexChat')
+            
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
             form.save()
-            return redirect('compte:login')
+            user = authenticate(request, username=form.cleaned_data['username'].lower(),
+                                password=form.cleaned_data['password'])
+            login(request, user)
+            return redirect('chat:indexChat')
         return self.render_page([request, form])
         
+
 class DeleteView(View):
     def get(self, request):
         if request.user.is_authenticated:

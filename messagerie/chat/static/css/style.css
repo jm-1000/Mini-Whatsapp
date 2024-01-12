@@ -71,19 +71,12 @@ p {
     .chat li:active, 
     .createGr div label:active,
     .useropt a:active,
+    .aside img:active,
     .inputMsgBtn:active {
         background-color: var(--link-hover-bg-color);
         color: var(--link-hover-color);
         border-radius: 0.1rem;
     }
-    /* a, 
-    .chat li, 
-    .createGr div label,
-    .useropt a,
-    .inputMsgBtn {
-        transition: 10ms;
-    } */
-    
     .header {
         position: relative;
         grid-row: 1;
@@ -207,70 +200,119 @@ p {
         top: 50%;
         transform: translate(-50%, -50%);
         background-image:var(--main-bg-image);
-        z-index: 10;
-        width: 20rem;
-        height: 20rem;
+        width: 16rem;
+        height: fit-content;
         text-align: center;
         font-size: var(--main-font-size);
-        border-radius: 1rem;
+        border-radius: .5rem;
         box-shadow: .01rem .01rem .2rem black, -.01rem -.01rem .2rem black ;
         color: white;
     }
     .createUser {
-        height: 31rem;
+        padding: 0 1rem 2.5rem;
+        width: 19rem;
     }
         .createUser form {
             position: relative;
-            top: 1.5rem;
             width: 85%;
-            margin: auto;
+            margin: auto auto;
         }
+            .createUser label + input {
+                width: 98%;
+                height: 1.2rem;
+                font-size: var(--main-font-size);
+                border: 0;
+                padding-left: .5rem;
+                color: white;
+                background-color: unset;
+                border-bottom: .1rem solid ;
+            }
+            label + input:focus, .createUser textarea:focus {
+                border-color: var(--link-hover-bg-color);
+            }
+            .createUser input {
+                width: 98%;
+                font-size: var(--small-font-size);
+                border: var(--border);
+            }
             .createUser textarea {
-                height: 6.5rem;
+                height: 3.5rem;
                 width: 97%;
                 padding-left: .5rem;
                 font-size: var(--main-font-size);
                 resize: none;
+                color: white;
+                border: .1rem solid ;
+                background-color: unset;
+            }
+            .createUser .submit {
+                padding: .3rem 0;
+                margin: 1.5rem 0 0;
                 border: var(--border);
+                border-radius: 1rem;
+                background-color: azure;
+                font-size: small;
+            } 
+            .createUser p {
+                width: 102%;
+                font-size: var(--small-font-size);
+                color: red;
+                margin-top: .2rem;
+                text-align: left;
             }
         .login p {
             position: relative;
             top: 2rem;
             font-weight: bold;
+            margin-bottom: 4rem;
+        }
+        .login input + p {
+            top: .75rem;
+            background-color: unset;
+            font-size: var(--small-font-size);
+            color: red;
+            margin: 0;
+            font-weight: unset;
         }
         .login form {
             position: relative;
-            top: 2.7rem;
             width: 80%;
             margin: auto;
         }
-            label {
+            .login label, .createUser label {
                 display: block;
                 width: 110%;
-                margin: 1rem 0 .2rem;
+                margin: 2rem 0 .2rem;
                 text-align: left;
+                font-size: var(--small-font-size);
             }
-            .login input, .createUser input {
+            .login input {
                 width: 98%;
-                height: 1.2rem;
                 font-size: var(--main-font-size);
-                border: var(--border);
+                border: 0;
                 padding-left: .5rem;
+                color: white;
+                background-color: unset;
+                border-bottom: .1rem solid ;
+
             }
             .login a {
-                position: relative;
-                top: 4.8rem; 
-                cursor: pointer;
-            }
-            .submit {
                 display: inline-block;
-                margin: 1.5rem 0 0;
+                margin-bottom: 2rem;
+            }
+            .login .submit {
+                margin: 1.5rem  0;
                 border: var(--border);
                 border-radius: 1rem;
-                padding: .4rem 0 1.4rem;
+                font-size: small;
+                color: black;
                 background-color: azure;
-                cursor: pointer;
-            }  
+                padding: .3rem 0;
+                text-align: center;
+            } 
+            .submit:active {
+                background-color: var(--link-hover-bg-color);
+            } 
     .chat {
         grid-row: 2;
         color: var(--link-color);
@@ -354,30 +396,37 @@ p {
                     }
             .createGr {
                 position: relative;
-                width: 80%;
+                width: 84%;
+                margin: auto ;
             }
-                .createGr label{
-                    font-size: var(--main-font-size);
+                .createGr > label{
+                    font-size: var(--small-font-size);
                 }
                 .createGr input {
                     font-size: var(--main-font-size);
                     width: 101%;
-                    border: var(--border);
+                    color: white;
+                    border: 0;
+                    border-bottom: .1rem solid;
+                    background-color: unset;
+
                 }
                 .createGr div {
                     height: 70%;
-                    width: 99%;
+                    width: 102%;
                     overflow-y: auto;
                     margin: 0;
                     margin-top: .5rem;
-                    padding-left: 1rem;
                 }
                         .createGr div label{
+                            display: block;
+                            text-align: left;
                             box-sizing: border-box;
                             width: 99%;
                             position: relative;
                             margin: 0;
-                            padding: .5rem 0 .5rem 2rem;
+                            padding: .5rem .7rem .5rem 2rem;
+
                         }
                             .createGr label input {
                                 width: fit-content;
@@ -412,7 +461,6 @@ p {
             position: sticky;
             padding: 0.5rem 0 0 3rem;
             z-index: 2;
-            /* font-size: var(--main-font-size); */
             color: var(--main-color);
         }
         .message header p {
@@ -470,10 +518,21 @@ p {
                 }
                 .aside .group div input{
                     width: 85%;
+                    color: white;
+                    border: 0;
+                    border-bottom: .1rem solid;
+                    background-color: unset;
+                }
+                .aside .group div input:focus {
+                    border-color: var(--link-hover-bg-color);
                 }
                 .aside .group img {
-                    width: 1rem;
-                    height: 1rem;
+                    width: .9rem;
+                    height: .9rem;
+                    padding: .2rem;
+                }
+                .aside .group ul {
+                    padding: .5rem;
                 }
             .aside > * {
                 margin: 1rem 2rem;

@@ -70,7 +70,8 @@ function fetchData(url, func) {
 }
 
 function websocketClient() {
-  websocket = new WebSocket('wss://' + window.location.host);
+  // websocket = new WebSocket('wss://' + window.location.host);
+  websocket = new WebSocket('ws://' + window.location.host);
   websocket.onopen = function(e){
     console.log('Connexion Websocket réussi.')
   }
@@ -106,7 +107,7 @@ function websocketClient() {
     console.log('Connexion Websocket non réussi ou perdu, reessayer en 2s.')
     setTimeout(() => {
       websocketClient();
-      getChats()
+      // getChats()
       }, 2000);
   }
 
@@ -124,7 +125,9 @@ function websocketClient() {
     fetchData(getChatUrl, function(data) {
       chatList.innerHTML = data;
       Array.from(chatList.children).forEach(item => {
-        websocketSend(item.getAttribute("id").split('id')[1])
+        let uuid = item.getAttribute("id").split('id')[1]
+        websocketSend(uuid)
+        websocketSend(uuid, 'delivered')
       })
       chatList.addEventListener('click', (e) => {
           try {
@@ -150,27 +153,34 @@ function websocketClient() {
       }
     }  
     fetchData(getChatUrl, (data) => {updateChatList(data, uuid)});
+    websocketSend(uuid, 'delivered')
   }
   
   function getNewMsg(data) {
+    console.log('okokokokok')
     sectionTemp.innerHTML = data;
     lastMsg = sectionTemp.querySelector('.readMsg ul li:last-child');
     readMsg.append(lastMsg);       
     setupChat.moveScrollAtBottom();
+    websocketSend(uuid, 'received')
   }
 
-  function updateChatList(data, uuid) {
+  function updateChatList(data, uuid, replace=false) {
     sectionTemp.innerHTML = data;
-    let target = chatList.querySelector('#id' + uuid);
-    if (!document.querySelector('.readMsg #id' + uuid)) {
-      mobileAlert(sectionTemp.querySelector('#id' + uuid + ' div'))
-    }
-    if (target) {
-      target.remove();
-      target.innerHTML = sectionTemp.querySelector('#id' + uuid).innerHTML;
-      chatList.prepend(target);
+    if (replace) {
+      chatList.innerHTML = data
     } else {
-      chatList.prepend(sectionTemp.querySelector('#id' + uuid));
+      let target = chatList.querySelector('#id' + uuid);
+      if (!document.querySelector('.readMsg #id' + uuid)) {
+        mobileAlert(sectionTemp.querySelector('#id' + uuid + ' div'))
+      }
+      if (target) {
+        target.remove();
+        target.innerHTML = sectionTemp.querySelector('#id' + uuid).innerHTML;
+        chatList.prepend(target);
+      } else {
+        chatList.prepend(sectionTemp.querySelector('#id' + uuid));
+      }
     }
   }
 
@@ -202,7 +212,7 @@ function websocketClient() {
 
   function postDeleteChat(uuid) {
     websocketSend(uuid, 'disconnect');
-    getChats();
+    fetchData(getChatUrl, (data) => {updateChatList(data, uuid, true)});
     let readMsg = document.querySelector('.readMsg ul');
     let chat = chatList.querySelector('#' + readMsg.getAttribute('id'));
     if (readMsg && chat) {
@@ -246,13 +256,13 @@ setupChat = (function() {
     websocketSend(uuid)
     fetchData(getChatUrl + uuid, function(data) {
       msgClass.innerHTML = data;
-      
       moveScrollAtBottom()
       displayChatMobileScreen(true);        
       sendingMsg();
       autoSizeTextarea();
       menuListenner()
       websocketSend(uuid, 'userConnected')
+      websocketSend(uuid, 'received')
     })
   }
 
@@ -276,10 +286,12 @@ setupChat = (function() {
           chatList.parentElement.style.display = 'none';
         } else {
           chatList.parentElement.style.display = 'block';
+          msgClass.innerHTML = noSelectedChatMsg.innerHTML
         }
         msgClass.addEventListener('click', function(e) {
           if (e.target.tagName === 'IMG' && e.target.parentElement.classList.contains('backBtn')) {
             chatList.parentElement.style.display = 'block';
+            msgClass.innerHTML = noSelectedChatMsg.innerHTML
           }
         }, true)
     } 
@@ -331,7 +343,8 @@ setupChat = (function() {
       menuGrAdmOperation(uuid)
     } else {
       aside.addEventListener('click', (e) => {
-        if (e.target.classList.contains('deleteGr')) {
+        console.log(e.target, e.target.parentElement.classList)
+        if (e.target.parentElement.classList.contains('deleteGr')) {
           websocketSend(uuid, 'deleteGr')
           aside.classList.add('moveAside');
         }

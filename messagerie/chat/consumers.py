@@ -23,51 +23,49 @@ class GetWebSocket(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
         action = data['action']
-        # print(action)
-        if action == 'connect':
+        if data['uuid']:
             self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
-            await self.channel_layer.group_add(str(self.chat.uuid), 
-                                               self.channel_name)
-        
-        if action == 'disconnect':
-            try:
-                self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
-                await self.channel_layer.group_discard(str(self.chat.uuid), 
-                                                   self.channel_name)
-            except: pass
-
-        elif action == 'userConnected':
-            self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
-            await self.sendStatusUser()
-
-        elif action == 'message':
-            self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
-            if await db_query(lambda x,y: x in y.users.all())(self.user, 
-                                                              self.chat):
-                await self.handleMsg(data['text'])
+            if action == 'connect':
+                await self.channel_layer.group_add(str(self.chat.uuid), 
+                                                self.channel_name)
             
+            elif action == 'disconnect':
+                try:
+                    await self.channel_layer.group_discard(str(self.chat.uuid), 
+                                                    self.channel_name)
+                except: pass
+
+            elif action == 'userConnected':
+                await self.sendStatusUser()
+
+            elif action == 'received' or action == 'delivered':
+                # print(action, self.user)
+                username = await db_query(self.chat.changeStatus)(action, self.user)
+                if username: await self.handleMsg(username=username, action='changeChat')
+
+            elif action == 'message':
+                if await db_query(lambda x,y: x in y.users.all())(self.user, 
+                                                                self.chat):
+                    await self.handleMsg(data['text'])
+                
+            elif action == 'renameGr':
+                await self.manageChat(data['text'])
+
+            elif action == 'addUsersGr':
+                await self.manageChat(usernames=data['usernames'])
+            
+            elif action == 'deleteUserGr':
+                await self.manageChat(usernames=data['usernames'], 
+                                    delete=True)
+            
+            elif action == 'deleteGr':
+                await self.manageChat(delete=True)
+
         elif action == 'createChat':
             await self.createChat(data['usernames'])
-            # await self.createChat(data['username'])
             
         elif action == 'createGr':
             await self.createGr(data['text'], data["usernames"])
-            # await self.createGr(data['namegr'], data["usernames"])
-        
-        elif action == 'renameGr':
-            await self.manageChat(data['uuid'], data['text'])
-            # await self.manageChat(data['uuid'], data['namegr'])
-
-        elif action == 'addUsersGr':
-            await self.manageChat(data['uuid'], usernames=data['usernames'])
-        
-        elif action == 'deleteUserGr':
-            await self.manageChat(data['uuid'], usernames=data['usernames'], 
-            # await self.manageChat(data['uuid'], usernames=data['username'], 
-                                  delete=True)
-        
-        elif action == 'deleteGr':
-            await self.manageChat(data['uuid'], delete=True)
 
 
     async def handleMsg(self, text=None, type='normal', username=None, 
@@ -129,9 +127,8 @@ class GetWebSocket(AsyncWebsocketConsumer):
         await self.send(json.dumps(data))
            
 
-    async def manageChat(self, uuid, namegr=None, usernames=None, 
+    async def manageChat(self, namegr=None, usernames=None, 
                          delete=False):
-        self.chat = await db_query(Chat.objects.get)(uuid=uuid)
         if await db_query(self.chat.is_adm)(self.user):
             if namegr and namegr!=self.chat.name:
                 text = f"Le nom du groupe est passé de '{self.chat}' à '{namegr}'."
@@ -185,6 +182,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
                         await self.handleMsg(username=name, action='deleteChat')
                     await db_query(self.chat.delete)()
 
+
     async def sendStatusUser(self, all=None):
         paris_timezone = pytz.timezone('Europe/Paris')
         getUser2 = lambda x, y: x[1] if y != x[1] else x[0]
@@ -195,7 +193,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
             for chat in chats:
                 if self.user.username in self.connectedUsers:
                     text = "En ligne"
-                else:
+                elif self.user.last_login:
                     text = str(self.user.last_login.astimezone(paris_timezone))[:16]
                 user = getUser2((chat[0]).split(' - '), self.user.username)
                 await self.handleMsg(text, username=user, action='userConnected', 
@@ -209,7 +207,8 @@ class GetWebSocket(AsyncWebsocketConsumer):
                                             'chat': str(self.chat.uuid) }))
             else:
                 user = await self.get_user(user)
-                await self.send(json.dumps({'action':'userConnected', 
+                if user.last_login:
+                    await self.send(json.dumps({'action':'userConnected', 
                                             'status': str(user.last_login.astimezone(paris_timezone))[:16],
                                             'chat': str(self.chat.uuid) }))
 

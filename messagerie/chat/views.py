@@ -1,12 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, HttpResponse
 from django.views import View
-from .models import User, Message, Chat
+from .models import User, Chat
 from .forms import MessageForm, GroupForm
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-from threading import Thread
-from time import sleep
 import pytz
 
 # Create your views here.
@@ -26,12 +22,6 @@ class GetChatView(LoginRequired, View):
             msg = chat.get_messages().last()
             if msg:
                 msg.timestamp = msg.timestamp.astimezone(paris_timezone)
-                # if (msg.type == 'normal' and msg.user != request.user and 
-                #     msg.status == 'sent'):
-                #     msg.status = 'delivered'
-                #     msg.save()
-                #     Thread(target=sendToConsumers, args=(chat.uuid, msg.user), 
-                #            daemon=True).start()
                 latestMsgs.append(msg)
         latestMsgs = sorted(latestMsgs, key=lambda x:x.timestamp, reverse=True)
         return render(request, 'chat/getChat.html', {'messages':latestMsgs})
@@ -39,7 +29,7 @@ class GetChatView(LoginRequired, View):
 
 class CreateChatView(LoginRequired, View):
     def get(self, request):
-        users = User.objects.exclude(id=request.user.id)
+        users = User.objects.exclude(id=request.user.id).order_by('username')
         return render(request, 'chat/createChat.html', {'users': users,
                                                         'group': GroupForm()})
 
@@ -51,12 +41,6 @@ class HandleChatView(LoginRequired, View):
         if request.user in chat.users.all():
             messages = []
             for msg in chat.get_messages():
-                # if (msg.type == 'normal' and msg.status == 'delivered' and 
-                #     msg.user != request.user):
-                #     msg.status = 'received'
-                #     msg.save()
-                #     Thread(target=sendToConsumers, args=(chat.uuid, msg.user), 
-                #            daemon=True).start()
                 dictMsg = {'date':str(msg.timestamp.date()), 'content':msg}
                 messages.append(dictMsg)
             return render(request, 'chat/handleChat.html', {'messages':messages,
@@ -72,14 +56,4 @@ class HandleGroupView(LoginRequired, View):
         return render(request, 'chat/chat.html', {  
             'message': MessageForm(initial={'chat':group.id}),
             'chat':group})
-
-
-def sendToConsumers(uuid, user):
-    sleep(5)
-    print('okok')
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)('user-' + str(user), {
-                                             'type':'sendToChat', 
-                                             'action':'changeChat', 
-                                             'chat':str(uuid), 'status':'' })
 

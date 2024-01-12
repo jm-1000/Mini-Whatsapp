@@ -9,6 +9,9 @@
         {{ form.username }}
         <label for="id_password">Mot de passe</label>
         {{ form.password }}
+        {% if form.errors.username %}
+            <p>{{form.errors.username.as_text}}</p>
+        {% endif %}
         <input class="submit" type="submit" value="Connecter">
     </form>
     <a href='{% url "compte:createUser" %}' id="createUserBtn">Créer une compte</a> 

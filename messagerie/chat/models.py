@@ -25,8 +25,23 @@ class Chat(models.Model):
     def __str__(self):
         return self.name  
     
-    def to_dict(self):
-        return dict(self)
+    def changeStatus(self, status, user):
+        message = Message.objects.filter(chat=self).filter(type='normal').last()
+        if message:
+            if message.user != user:
+                if message.status == 'sent' and status == 'delivered':
+                    message.status = 'delivered'
+                    message.save()
+                elif message.status == 'delivered' and status == 'received':
+                    message.status = status
+                    message.save()
+                    msgs = Message.objects.filter(chat=self, type='normal')
+                    msgs = msgs.exclude(status=status)
+                    for msg in msgs:
+                        msg.status = status
+                        msg.save()
+                return message.user.username
+        
     
     def is_adm(self, user:User):
         return self.adm == user
