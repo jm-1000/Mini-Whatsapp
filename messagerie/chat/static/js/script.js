@@ -12,6 +12,7 @@ const getChatUrl = '/chat/'
 const mediaScreen = window.matchMedia("(min-width: 768px)");
 const sectionTemp = document.createElement('section');
 const alert = document.getElementById('alert');
+const initialHeight = window.visualViewport.height
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -482,7 +483,6 @@ function menuGrAdmOperation(uuid) {
   })
 };
 
-let initialHeight = window.visualViewport.height
 window.addEventListener('resize', () => {
   if (!window.visualViewport) {
   return;
