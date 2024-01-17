@@ -70,12 +70,8 @@ function fetchData(url, func) {
 }
 
 function websocketClient() {
-  try {
-    websocket = new WebSocket('wss://' + window.location.host);
-  } catch(e) {
-    console.log(e, "Impossible d'avoir une connexion websocket sécurisé. Essayant la non sécurisé.")
-    websocket = new WebSocket('ws://' + window.location.host);
-  }
+  // let websocket = new WebSocket((url? url : 'wss://') + window.location.host);
+  let websocket = new WebSocket('ws://' + window.location.host);
   
   websocket.onopen = function(e){
     console.log('Connexion Websocket réussi.')
@@ -110,10 +106,7 @@ function websocketClient() {
   }
   websocket.onclose = function(e) {
     console.log('Connexion Websocket non réussi ou perdu, reessayer en 2s.')
-    setTimeout(() => {
-      websocketClient();
-      // getChats()
-      }, 2000);
+    setTimeout(() => {websocketClient()}, 2000);
   }
 
   function websocketSend(uuid, action='connect', text=null, usernames=null) {
