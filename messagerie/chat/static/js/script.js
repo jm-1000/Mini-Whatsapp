@@ -70,8 +70,8 @@ function fetchData(url, func) {
 }
 
 function websocketClient() {
-  // websocket = new WebSocket('wss://' + window.location.host);
-  websocket = new WebSocket('ws://' + window.location.host);
+  websocket = new WebSocket('wss://' + window.location.host);
+  // websocket = new WebSocket('ws://' + window.location.host);
   websocket.onopen = function(e){
     console.log('Connexion Websocket réussi.')
   }
@@ -176,11 +176,12 @@ function websocketClient() {
       }
       if (target) {
         target.remove();
-        target.innerHTML = sectionTemp.querySelector('#id' + uuid).innerHTML;
-        chatList.prepend(target);
-      } else {
-        chatList.prepend(sectionTemp.querySelector('#id' + uuid));
+        target = sectionTemp.querySelector('#id' + uuid)
+        if (document.querySelector('.readMsg #id' + uuid)) {
+          target.classList.remove('unread');
+        }
       }
+      chatList.prepend(sectionTemp.querySelector('#id' + uuid));
     }
   }
 
@@ -225,7 +226,7 @@ function websocketClient() {
   }
 
   alert.addEventListener('click', (e) => {
-    postChangeChat(e.target.getAttribute('id').split('id')[1]);
+    setupChat.init(e.target.getAttribute("id").split('id')[1])
   })
   
   const mobileAlert = (alertTag) => {  
@@ -263,6 +264,7 @@ setupChat = (function() {
       menuListenner()
       websocketSend(uuid, 'userConnected')
       websocketSend(uuid, 'received')
+      document.getElementById('id' + uuid).classList.remove('unread');
     })
   }
 

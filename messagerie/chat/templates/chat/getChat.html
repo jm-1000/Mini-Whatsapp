@@ -1,6 +1,10 @@
 {% for msg in messages %}
     {% if msg  %}
+        {% if msg.status != 'received' and msg.user != user %}
+        <li class='chatChild unread' id='id{{msg.chat.uuid}}'> 
+        {% else %}
         <li class='chatChild' id='id{{msg.chat.uuid}}'> 
+        {% endif %}
             <p>
                 {% if msg.chat.groupe %}
                     {{ msg.chat|capfirst }}

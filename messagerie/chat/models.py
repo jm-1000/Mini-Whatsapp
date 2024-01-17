@@ -26,7 +26,7 @@ class Chat(models.Model):
         return self.name  
     
     def changeStatus(self, status, user):
-        message = Message.objects.filter(chat=self).filter(type='normal').last()
+        message = Message.objects.filter(chat=self).last()
         if message:
             if message.user != user:
                 if message.status == 'sent' and status == 'delivered':
@@ -35,7 +35,7 @@ class Chat(models.Model):
                 elif message.status == 'delivered' and status == 'received':
                     message.status = status
                     message.save()
-                    msgs = Message.objects.filter(chat=self, type='normal')
+                    msgs = Message.objects.filter(chat=self)
                     msgs = msgs.exclude(status=status)
                     for msg in msgs:
                         msg.status = status

@@ -17,7 +17,6 @@ class GetWebSocket(AsyncWebsocketConsumer):
                 self.connectedUsers.append(str(self.user))
                 await self.sendStatusUser(True)
                 print(self.user, time.ctime())
-        
 
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -39,7 +38,6 @@ class GetWebSocket(AsyncWebsocketConsumer):
                 await self.sendStatusUser()
 
             elif action == 'received' or action == 'delivered':
-                # print(action, self.user)
                 username = await db_query(self.chat.changeStatus)(action, self.user)
                 if username: await self.handleMsg(username=username, action='changeChat')
 

@@ -61,7 +61,7 @@
                     <ul class='asideadm'>
                         {% for user in users %}
                         {% if user not in chat.users.all %}
-                            <li>{{ user|capfirst }}<input type="checkbox" class="option" value="{{ user }}"/></li>
+                            <li>{{ user|capfirst }}<a><input type="checkbox" class="option" value="{{ user }}"/></a></li>
                         {% endif %}
                         {% endfor %}
                     </ul>

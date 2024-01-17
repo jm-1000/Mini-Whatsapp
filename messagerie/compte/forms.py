@@ -32,7 +32,9 @@ class CreateUserForm(forms.ModelForm):
     def clean_username(self,*args,**kwargs):
         username = self.cleaned_data['username']
         regex = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
-        if User.objects.get(username=username.lower()):
+        try: user = User.objects.get(username=username.lower())
+        except: user = None
+        if user:
             raise forms.ValidationError('Un utilisateur avec ce nom existe déjà')
         if not username or not re.match(regex, username):
             raise forms.ValidationError('Nom invalide.')

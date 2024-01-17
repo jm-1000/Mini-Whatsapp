@@ -72,6 +72,7 @@ p {
     .createGr div label:active,
     .useropt a:active,
     .aside img:active,
+    .asideadm a:active,
     .inputMsgBtn:active {
         background-color: var(--link-hover-bg-color);
         color: var(--link-hover-color);
@@ -363,6 +364,9 @@ p {
                     word-break: break-all;
                     overflow: hidden;
                 }
+                .unread {
+                    background-color: rgba(173, 216, 230, 0.129);
+                }
                 
 
         .create {
@@ -574,6 +578,14 @@ p {
                     right: 2rem;
                     bottom: 1rem;
                 }
+                .asideadm a {
+                    padding: .15rem .15rem .0rem;
+                }
+                .asideadm input {
+                    margin: 0;
+                    padding: 0;
+                }
+
 
             
 
@@ -732,6 +744,7 @@ p {
         .createGr div label:hover,
         .useropt a:hover,
         .aside img:hover,
+        .asideadm a:hover,
         .inputMsgBtn:hover {
             background-color: var(--link-hover-bg-color);
             color: var(--link-hover-color);
