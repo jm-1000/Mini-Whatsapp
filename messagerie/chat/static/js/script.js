@@ -70,8 +70,13 @@ function fetchData(url, func) {
 }
 
 function websocketClient() {
-  websocket = new WebSocket('wss://' + window.location.host);
-  // websocket = new WebSocket('ws://' + window.location.host);
+  try {
+    websocket = new WebSocket('wss://' + window.location.host);
+  } catch(e) {
+    console.log(e, "Impossible d'avoir une connexion websocket sécurisé. Essayant la non sécurisé.")
+    websocket = new WebSocket('ws://' + window.location.host);
+  }
+  
   websocket.onopen = function(e){
     console.log('Connexion Websocket réussi.')
   }
