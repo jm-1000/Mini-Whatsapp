@@ -22,48 +22,51 @@ class GetWebSocket(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
         action = data['action']
-        if data['uuid']:
-            self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
-            if action == 'connect':
-                await self.channel_layer.group_add(str(self.chat.uuid), 
-                                                self.channel_name)
-            
-            elif action == 'disconnect':
-                try:
-                    await self.channel_layer.group_discard(str(self.chat.uuid), 
+        try:
+            if data['uuid']:
+                self.chat = await db_query(Chat.objects.get)(uuid=data['uuid'])
+                if action == 'connect':
+                    await self.channel_layer.group_add(str(self.chat.uuid), 
                                                     self.channel_name)
-                except: pass
-
-            elif action == 'userConnected':
-                await self.sendStatusUser()
-
-            elif action == 'received' or action == 'delivered':
-                username = await db_query(self.chat.changeStatus)(action, self.user)
-                if username: await self.handleMsg(username=username, action='changeChat')
-
-            elif action == 'message':
-                if await db_query(lambda x,y: x in y.users.all())(self.user, 
-                                                                self.chat):
-                    await self.handleMsg(data['text'])
                 
-            elif action == 'renameGr':
-                await self.manageChat(data['text'])
+                elif action == 'disconnect':
+                    try:
+                        await self.channel_layer.group_discard(str(self.chat.uuid), 
+                                                        self.channel_name)
+                    except: pass
 
-            elif action == 'addUsersGr':
-                await self.manageChat(usernames=data['usernames'])
-            
-            elif action == 'deleteUserGr':
-                await self.manageChat(usernames=data['usernames'], 
-                                    delete=True)
-            
-            elif action == 'deleteGr':
-                await self.manageChat(delete=True)
+                elif action == 'userConnected':
+                    await self.sendStatusUser()
 
-        elif action == 'createChat':
-            await self.createChat(data['usernames'])
-            
-        elif action == 'createGr':
-            await self.createGr(data['text'], data["usernames"])
+                elif action == 'received' or action == 'delivered':
+                    username = await db_query(self.chat.changeStatus)(action, self.user)
+                    if username: await self.handleMsg(username=username, action='changeChat')
+
+                elif action == 'message':
+                    if await db_query(lambda x,y: x in y.users.all())(self.user, 
+                                                                    self.chat):
+                        await self.handleMsg(data['text'])
+                    
+                elif action == 'renameGr':
+                    await self.manageChat(data['text'])
+
+                elif action == 'addUsersGr':
+                    await self.manageChat(usernames=data['usernames'])
+                
+                elif action == 'deleteUserGr':
+                    await self.manageChat(usernames=data['usernames'], 
+                                        delete=True)
+                
+                elif action == 'deleteGr':
+                    await self.manageChat(delete=True)
+
+            elif action == 'createChat':
+                await self.createChat(data['usernames'])
+                
+            elif action == 'createGr':
+                await self.createGr(data['text'], data["usernames"])
+        except Exception as e:
+            print("Error:", e); pass
 
 
     async def handleMsg(self, text=None, type='normal', username=None, 
@@ -105,8 +108,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
         text = f'Vous avez créé ce groupe.'
         await self.handleMsg(text, 'create')
         await self.connectChat(usernames=usernames)
-        
-        
+           
         
     async def connectChat(self, action='message', usernames=None):
         data = {
@@ -210,6 +212,7 @@ class GetWebSocket(AsyncWebsocketConsumer):
                                             'status': str(user.last_login.astimezone(paris_timezone))[:16],
                                             'chat': str(self.chat.uuid) }))
 
+
     @db_query
     def get_user(self, username=None):
         if username: return User.objects.get(username=username)
@@ -222,25 +225,4 @@ class GetWebSocket(AsyncWebsocketConsumer):
         print(time.ctime())
 
 
-'''
-elif action == 'createChat':
-            # await self.createChat(data['usernames'])
-            await self.createChat(data['username'])
-            
-        elif action == 'createGr':
-            # await self.createGr(data['text'], data["usernames"])
-            await self.createGr(data['namegr'], data["usernames"])
-        
-        elif action == 'renameGr':
-            # await self.manageChat(data['uuid'], data['text'])
-            await self.manageChat(data['uuid'], data['namegr'])
 
-        elif action == 'addUsersGr':
-            await self.manageChat(data['uuid'], usernames=data['usernames'])
-        
-        elif action == 'deleteUserGr':
-            # await self.manageChat(data['uuid'], usernames=data['usernames'], 
-            await self.manageChat(data['uuid'], usernames=data['username'], 
-                                  delete=True)
-
-'''

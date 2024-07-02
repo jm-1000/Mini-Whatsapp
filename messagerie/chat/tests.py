@@ -4,7 +4,7 @@ from .models import *
 from random import randint
 
 # Create your tests here.
-class Creer_users(TestCase):
+class Create_users(TestCase):
     def setUp(self):
         user_modal = get_user_model()
         self.james = user_modal.objects.create_user('james','','x')
@@ -12,13 +12,13 @@ class Creer_users(TestCase):
         self.daniel = user_modal.objects.create_user('daniel','','x')
         self.john = user_modal.objects.create_user('john','','x')
 
-class Creer_chat(Creer_users, TestCase):
+class Create_chat(Creer_users, TestCase):
         def test_model_chat(self):
             self.james.get_or_create_chat(self.luis.id)
             self.daniel.create_group('GrTest1', [self.james.id, self.luis.id, self.john.id])
                  
     
-class Creer_chat(TestCase):
+class Create_chat(TestCase):
         user_modal = get_user_model()
         Chat.objects.all().delete()
         user_modal.objects.all().delete()
