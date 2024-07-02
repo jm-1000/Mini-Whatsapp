@@ -33,6 +33,8 @@ Powered by Django, the application leverages Django Channels and WebSockets to f
 
 - Install Dependencies: `pip3 install -r messagerie/requirements.txt`
 
+- For some reason we have to reinstall the channels package : `pip uninstall channels; pip3 install --upgrade channels`
+
 - Set up database schema: `python3 messagerie/manage.py migrate`
 
 - Start the Server: `python3 messagerie/manage.py runserver`
