@@ -5,4 +5,4 @@ bin/
 lib/  
 pyvenv.cfg
 messagerie/db.sqlite3
-lib64
+lib64/
