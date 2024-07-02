@@ -29,7 +29,7 @@ Powered by Django, the application leverages Django Channels and WebSockets to f
 
 2. Activate the Virtual Environment: `source [environment_name]/bin/activate`
 
-3. Clone the Repository: `git clone https://github.com/jm-1000/Mini-Whatsapp.git`
+3. Download and extract the repository
 
 4. Install Dependencies: `pip3 install -r requirements.txt`
 
