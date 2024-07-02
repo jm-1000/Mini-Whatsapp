@@ -4,4 +4,4 @@ venv/
 bin/  
 lib/  
 pyvenv.cfg
-*/db.sqlite3
+messagerie/db.sqlite3
