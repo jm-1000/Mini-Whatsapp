@@ -25,16 +25,16 @@ Powered by Django, the application leverages Django Channels and WebSockets to f
 
 ## Installation Guide (Linux)
 
-1. Create a Python Virtual Environment: `python3 -m venv [environment_name]`
+- Create a Python Virtual Environment: `python3 -m venv [environment_name]`
 
-2. Activate the Virtual Environment: `source [environment_name]/bin/activate`
+- Activate the Virtual Environment: `cd [environment_name]; source bin/activate`
 
-3. Download and extract the repository
+- Download and extract the repository
 
-4. Install Dependencies: `pip3 install -r requirements.txt`
+- Install Dependencies: `pip3 install -r messagerie/requirements.txt`
 
-5. Set up database schema: `python3 manage.py migrate`
+- Set up database schema: `python3 messagerie/manage.py migrate`
 
-6. Start the Server: `python3 manage.py runserver`
+- Start the Server: `python3 messagerie/manage.py runserver`
 
 Enjoy the seamless chat experience with Mini-Whatsapp!
